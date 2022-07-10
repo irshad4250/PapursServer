@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Maven+Pro&family=Noto+Sans&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../public/static/styles/root.css" />
+    <link rel="stylesheet" href="../public/static/styles/search.css" />
+    <title>Papurs</title>
+  </head>
+  <body>
+    <%-include("./partials/navbar.ejs")%>
+
+    <div class="main">
+      <% if (!empty) { %> <% results.forEach(result => { %>
+
+      <div class="resultBox">
+        <div class="resultTitle">
+          <img
+            class="resultTitleIcon"
+            src="/public/assets/icons/stickies.svg"
+            alt="Paper icon"
+          />
+          <%=result.title %>
+        </div>
+        <div class="resultSubject"><%=result.subject %></div>
+        <div class="resultRedirects">
+          <a
+            class="linkRow"
+            href="<%=result.qpLink %>"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <img src="/public/assets/icons/paperclip.svg" class="linkIcon" />
+            <div>View Question paper</div>
+          </a>
+          <a
+            class="linkRow linkMark"
+            href="<%=result.msLink %>"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <img src="/public/assets/icons/pen.svg" class="linkIcon" />
+            <div>View Mark Scheme</div>
+          </a>
+        </div>
+      </div>
+
+      <% }) %> <% } else{%>
+      <div class="noResults">No results found</div>
+      <% } %>
+    </div>
+  </body>
+</html>

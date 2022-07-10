@@ -1,0 +1,112 @@
+.leftSide,
+.rightSide {
+  margin-left: 20px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: start;
+  gap: 15px;
+}
+
+.rightSide {
+  margin-left: 0;
+  margin-right: 20px;
+}
+
+.navbar {
+  padding: 0;
+  margin: 0;
+  position: sticky;
+  height: 55px;
+  /* width: 100vw; */
+  background-color: var(--colorAccent);
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  overflow: hidden;
+}
+
+.searchBoxAndFilterContainer {
+  width: 550px;
+  height: 40px;
+  border-radius: 10px;
+  overflow: hidden;
+  transition: 100ms ease-in-out;
+  display: flex;
+  flex-direction: row;
+  box-shadow: none;
+  background-color: white;
+}
+
+.searchBox {
+  border: none;
+  width: 100%;
+  height: 100%;
+  padding-left: 10px;
+  font-size: 20px;
+  background-color: white;
+  outline: none;
+  box-shadow: none;
+  appearance: none;
+  -webkit-appearance: none;
+}
+
+.searchBoxAndFilterContainer:focus-within {
+  box-shadow: none;
+}
+
+.funnelIcon {
+  width: 30px;
+  padding-right: 10px;
+  background-color: white;
+  cursor: pointer;
+  transition: 100ms ease-in;
+  color: var(--colorAccent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.title {
+  font-family: "Maven Pro", sans-serif;
+  font-size: 30px;
+  color: white;
+}
+
+@media screen and (max-width: 800px) {
+  .title {
+    display: none;
+  }
+  .leftSide {
+    width: 100%;
+    margin-left: 5px;
+    margin-right: 5px;
+  }
+  .searchBoxAndFilterContainer {
+    width: 100%;
+  }
+  .rightSide {
+    display: none;
+    margin-right: 0;
+  }
+}
+
+.rightSide > ul {
+  margin: 0;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-evenly;
+  list-style: none;
+  gap: 10px;
+  box-sizing: border-box;
+  margin-left: 10px;
+}
+
+.rightSide li {
+  font-family: var(--fontAccent);
+  font-size: 25px;
+  color: white;
+  cursor: pointer;
+}

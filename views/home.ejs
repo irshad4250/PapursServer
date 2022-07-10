@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Maven+Pro&family=Noto+Sans&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../public/static/styles/root.css" />
+    <link rel="stylesheet" href="../public/static/styles/home.css" />
+
+    <title>Papurs</title>
+  </head>
+  <body>
+    <!-- <div class="navbarHome"></div> -->
+    <%-include("./partials/noInputNavbar.ejs")%>
+    <div class="main">
+      <div class="inputContainer">
+        <h1 class="papursTitle">Papurs</h1>
+        <div class="searchBoxAndFilterContainer">
+          <input type="search" class="searchBox" placeholder="Type question" />
+
+          <img
+            src="../public/assets/icons/funnel.svg"
+            class="funnelIcon"
+            alt="filter icon"
+          />
+        </div>
+
+        <div class="searchButton">Search</div>
+
+        <!-- <div class="adsContainer">
+          <script
+            async
+            src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8618691594432056"
+            crossorigin="anonymous"
+          ></script>
+          <ins
+            class="adsbygoogle"
+            style="display: block"
+            data-ad-format="fluid"
+            data-ad-layout-key="-ef+6k-30-ac+ty"
+            data-ad-client="ca-pub-8618691594432056"
+            data-ad-slot="4271781646"
+          ></ins>
+          <script>
+            ;(adsbygoogle = window.adsbygoogle || []).push({})
+          </script>
+        </div> -->
+      </div>
+    </div>
+
+    <script src="../public/static/scripts/home.js"></script>
+  </body>
+</html>

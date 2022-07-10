@@ -1,0 +1,120 @@
+.searchBoxAndFilterContainer {
+  width: 550px;
+  height: 40px;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0px 0px 2px 1px #c1c1c1;
+  transition: 100ms ease-in-out;
+  display: flex;
+  flex-direction: row;
+  margin: auto;
+  margin-top: 40px;
+  margin-bottom: 40px;
+  background-color: white;
+}
+
+.searchBox {
+  -webkit-appearance: none;
+  border: none;
+  width: 100%;
+  height: 100%;
+  padding-left: 10px;
+  font-size: 20px;
+  background-color: white;
+  outline: none;
+}
+
+.searchBoxAndFilterContainer:focus-within {
+  box-shadow: 0px 0px 12px 1px #c1c1c1;
+}
+
+.papursTitle {
+  width: 100%;
+  text-align: center;
+  font-family: "Maven Pro", sans-serif;
+  font-size: 40px;
+  margin: 0;
+}
+
+.inputContainer {
+  padding-top: 40px;
+  width: 100%;
+  min-width: 300px;
+  /* display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: start; */
+  row-gap: 40px;
+}
+
+.funnelIcon {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+  width: 30px;
+  padding-right: 10px;
+  background-color: white;
+  cursor: pointer;
+  transition: 100ms ease-in;
+  color: var(--colorAccent);
+}
+
+.funnelIcon:hover,
+.funnelIcon:active {
+  transform: scale(1.1);
+}
+
+.searchButton {
+  border-radius: 20px;
+  outline: none;
+  border: none;
+  width: 70px;
+  height: 30px;
+  cursor: pointer;
+  background-color: var(--colorAccent);
+  color: white;
+  font-family: "Noto Sans", sans-serif;
+  font-size: 16px;
+  transition: 200ms ease-in-out;
+  margin: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.searchButton:hover {
+  background-color: var(--colorAccentHover);
+}
+
+.navbarHome {
+  position: sticky;
+  height: 55px;
+  width: 100vw;
+  background-color: var(--colorAccent);
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  overflow: hidden;
+}
+.adsContainer {
+  margin: auto;
+  width: 100%;
+  height: fit-content;
+}
+
+@media screen and (max-width: 600px) {
+  .searchBoxAndFilterContainer {
+    width: 100%;
+  }
+  .inputContainer {
+    box-sizing: border-box;
+    padding: 10px;
+  }
+  .papursTitle {
+    margin-top: 30%;
+  }
+  .searchButton {
+    transform: scale(1.15);
+  }
+}

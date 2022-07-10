@@ -1,0 +1,27 @@
+<link rel="stylesheet" href="../../public/static/styles/navbar.css" />
+<nav class="navbar">
+  <div class="leftSide">
+    <a class="title" href="/">Papurs</a>
+    <div class="searchBoxAndFilterContainer">
+      <input type="search" class="searchBox" value="<%=q%>" />
+      <img
+        src="../public/assets/icons/funnel.svg"
+        class="funnelIcon"
+        alt="filter"
+      />
+      <img
+        src="../public/assets/icons/search.svg"
+        class="funnelIcon searchButton"
+        alt="search"
+      />
+    </div>
+  </div>
+  <div class="rightSide">
+    <ul>
+      <li><a href="/">Home</a></li>
+      <li><a href="/news">News</a></li>
+      <li><a href="/more">More</a></li>
+    </ul>
+  </div>
+</nav>
+<script src="/public/static/scripts/searchInput.js"></script>
