@@ -66,14 +66,15 @@ function getResults(searchText) {
               query: searchText,
               path: "body",
               fuzzy: {
-                maxEdits: 2,
+                maxEdits: 1,
                 prefixLength: 4,
+                maxExpansions: 1,
               },
             },
             // phrase: {
             //   query: searchText,
             //   path: "body",
-            //   slop: 3,
+            //   slop: 2,
             // },
           },
         },
