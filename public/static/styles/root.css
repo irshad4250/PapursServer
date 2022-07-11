@@ -2,6 +2,11 @@
   --colorAccent: #6d28d9;
   --colorAccentHover: #9158ec;
   --fontAccent: "Noto Sans", sans-serif;
+  --titleFont: "Maven Pro", sans-serif;
+  --bodyColor: rgb(245 245 245);
+}
+* {
+  box-sizing: border-box;
 }
 body {
   background-color: rgb(245 245 245);
@@ -24,4 +29,27 @@ body {
 a {
   text-decoration: none;
   color: currentColor;
+}
+
+input {
+  outline: none;
+  appearance: none;
+  -webkit-appearance: none;
+}
+
+.papursButton {
+  background-color: var(--colorAccent);
+  border-radius: 10px;
+  font-family: var(--fontAccent);
+  color: whitesmoke;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 3px;
+  transition: 150ms ease-in-out;
+  cursor: pointer;
+}
+
+.papursButton:hover {
+  background-color: var(--colorAccentHover);
 }

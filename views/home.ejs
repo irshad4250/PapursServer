@@ -4,6 +4,11 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Search examination questions and find out which year they belong to. View the question papers and mark schemes."
+    />
+    <meta name="keywords" content="O-Level, A-Level, CIE, Past Papers,Search" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -21,7 +26,6 @@
     <title>Papurs</title>
   </head>
   <body>
-    <!-- <div class="navbarHome"></div> -->
     <%-include("./partials/noInputNavbar.ejs")%>
     <div class="main">
       <div class="inputContainer">
@@ -38,24 +42,44 @@
 
         <div class="searchButton">Search</div>
 
-        <!-- <div class="adsContainer">
-          <script
-            async
-            src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8618691594432056"
-            crossorigin="anonymous"
-          ></script>
-          <ins
-            class="adsbygoogle"
-            style="display: block"
-            data-ad-format="fluid"
-            data-ad-layout-key="-ef+6k-30-ac+ty"
-            data-ad-client="ca-pub-8618691594432056"
-            data-ad-slot="4271781646"
-          ></ins>
-          <script>
-            ;(adsbygoogle = window.adsbygoogle || []).push({})
-          </script>
-        </div> -->
+        <div class="howToUseBox">
+          <h2>How to use</h2>
+          <div>1. Enter question. For example: what is a mole.</div>
+          <div>2. Press search.</div>
+          <div>
+            3. We will give you a list of papers which have the question.
+          </div>
+          <div>
+            Tip: To get more accurate results. Type questions which seem to be
+            unique from other papers.
+          </div>
+          <div>
+            For example: "A person uses a trolley to move suitcases at an
+            airport" will more unique than "what is a mole". Therefore bringing
+            more accurate results.
+          </div>
+        </div>
+
+        <div class="filterContainer">
+          <div class="filterBox">
+            <div class="filterLabel examinationLabel">Examination</div>
+            <div class="filterInputContainer">
+              <input type="text" class="filterInput examinationInput" />
+            </div>
+
+            <div class="filterLabel subjectLabel">Subject</div>
+            <div class="filterInputContainer">
+              <input type="text" class="filterInput subjectInput" />
+            </div>
+
+            <div class="filterLabel subjectLabel">Year</div>
+            <div class="filterInputContainer">
+              <input type="text" class="filterInput yearInput" />
+            </div>
+
+            <div class="papursButton filterApplyButton">Apply</div>
+          </div>
+        </div>
       </div>
     </div>
 

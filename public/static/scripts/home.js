@@ -16,3 +16,16 @@ function go() {
 
   window.location.href = url
 }
+
+const examInput = document.querySelector(".examinationInput")
+const subjectInput = document.querySelector(".subject")
+const yearInput = document.querySelector(".yearInput")
+const filterContainer = document.querySelector(".filterContainer")
+
+document.querySelector(".filterApplyButton").addEventListener("click", () => {
+  filterContainer.style.display = "none"
+})
+
+document.querySelector(".funnelIcon").addEventListener("click", () => {
+  filterContainer.style.display = "flex"
+})

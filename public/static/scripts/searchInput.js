@@ -18,3 +18,15 @@ function go() {
 
   window.location.href = url
 }
+
+const closeNavButton = document.querySelector(".closeNavButton")
+const burger = document.querySelector(".burgerContainer")
+const rightSide = document.querySelector(".rightSide")
+
+burger.addEventListener("click", () => {
+  rightSide.style.top = 0
+})
+
+closeNavButton.addEventListener("click", () => {
+  rightSide.style.top = "100%"
+})

@@ -40,10 +40,6 @@
   padding-top: 40px;
   width: 100%;
   min-width: 300px;
-  /* display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: start; */
   row-gap: 40px;
 }
 
@@ -103,6 +99,87 @@
   height: fit-content;
 }
 
+.filterContainer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgb(0, 0, 0, 0.5);
+  font-family: var(--fontAccent);
+  display: none;
+}
+
+.filterBox {
+  height: 300px;
+  width: 250px;
+  background-color: var(--bodyColor);
+  border-radius: 20px;
+  box-shadow: 0px 0px 5px 1px;
+  display: inline;
+  box-sizing: border-box;
+  padding: 5px;
+}
+
+.filterLabel {
+  width: fit-content;
+  margin-left: 35px;
+}
+
+.filterInput {
+  width: 170px;
+  height: 20px;
+  margin: auto;
+  border-radius: 5px;
+  border: solid 1px black;
+  transition: 100ms;
+  padding: 5px;
+  padding-left: 3px;
+}
+.filterInput:focus {
+  border: solid 2px var(--colorAccent);
+}
+
+.filterInputContainer {
+  margin: auto;
+  width: fit-content;
+  margin-bottom: 10px;
+}
+
+.filterApplyButton {
+  width: fit-content;
+  padding-left: 7px;
+  padding-right: 7px;
+  margin: auto;
+}
+
+.howToUseBox {
+  display: flex;
+  margin: auto;
+  flex-direction: column;
+  margin-top: 20px;
+  width: 550px;
+  border-radius: 15px;
+  background-color: white;
+  box-shadow: 0px 0px 2px 1px #c1c1c1;
+  height: fit-content;
+  font-family: var(--fontAccent);
+  padding: 5px;
+}
+
+.howToUseBox > h2 {
+  padding: 0;
+  margin: 0;
+  margin: auto;
+  width: fit-content;
+  max-width: 100%;
+  font-weight: bold;
+  font-size: 20px;
+}
+
 @media screen and (max-width: 600px) {
   .searchBoxAndFilterContainer {
     width: 100%;
@@ -112,9 +189,12 @@
     padding: 10px;
   }
   .papursTitle {
-    margin-top: 30%;
+    margin-top: 15%;
   }
   .searchButton {
     transform: scale(1.15);
+  }
+  .howToUseBox {
+    width: 100%;
   }
 }

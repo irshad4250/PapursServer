@@ -11,6 +11,7 @@
 .rightSide {
   margin-left: 0;
   margin-right: 20px;
+  transition: 250ms ease-out;
 }
 
 .navbar {
@@ -74,24 +75,6 @@
   color: white;
 }
 
-@media screen and (max-width: 800px) {
-  .title {
-    display: none;
-  }
-  .leftSide {
-    width: 100%;
-    margin-left: 5px;
-    margin-right: 5px;
-  }
-  .searchBoxAndFilterContainer {
-    width: 100%;
-  }
-  .rightSide {
-    display: none;
-    margin-right: 0;
-  }
-}
-
 .rightSide > ul {
   margin: 0;
   padding: 0;
@@ -109,4 +92,62 @@
   font-size: 25px;
   color: white;
   cursor: pointer;
+}
+
+.burgerContainer {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  width: 50px;
+  height: 30px;
+  margin-right: 8px;
+  cursor: pointer;
+}
+
+.burgerContainer > div {
+  background-color: white;
+  width: 100%;
+  height: 5px;
+  border-radius: 3px;
+}
+.closeNavButton {
+  display: none;
+  text-decoration: underline;
+}
+
+@media screen and (max-width: 800px) {
+  .title {
+    display: none;
+  }
+  .leftSide {
+    width: 100%;
+    margin-left: 5px;
+    margin-right: 5px;
+  }
+  .searchBoxAndFilterContainer {
+    width: 100%;
+  }
+  .rightSide {
+    position: fixed;
+    top: 100%;
+    left: 0;
+    margin-right: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: var(--colorAccent);
+  }
+  .rightSide ul {
+    height: 100%;
+    width: 100%;
+    flex-direction: column;
+    justify-content: start;
+    align-items: center;
+  }
+  .burgerContainer {
+    display: flex;
+  }
+  .closeNavButton {
+    display: block;
+  }
 }
