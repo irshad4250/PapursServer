@@ -14,7 +14,7 @@
     />
 
     <link rel="stylesheet" href="../public/static/styles/root.css" />
-    <link rel="stylesheet" href="../public/static/styles/news.css" />
+    <link rel="stylesheet" href="../public/static/styles/contact.css" />
     <script
       async
       src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8618691594432056"
@@ -25,29 +25,13 @@
   <body>
     <%-include("./partials/noInputNavbar.ejs")%>
     <div class="main">
-      <h1>Papurs News</h1>
-      <div class="news">
-        <div class="newsHeader">
-          <h2>Papurs is still in demo.</h2>
-          <div class="date">11/07/2022</div>
-        </div>
-        <div>
-          Search results are not guaranteed to be accurate since the app is
-          still in demo. There might be bugs and unfinished places in the
-          website. Papurs will be released soon.
-        </div>
-      </div>
-      <div class="news">
-        <div class="newsHeader">
-          <h2>Searching for maths questions is not ready.</h2>
-          <div class="date">11/07/2022</div>
-        </div>
-
-        <div>
-          Searching for maths question will result into unexpected results use
-          at your own risk. This issue will be fixed soon.
-        </div>
+      <div class="messageBox">
+        <h1>Contact Us</h1>
+        <input type="text" placeholder="Email" class="emailInput" />
+        <textarea placeholder="Message" class="messageInput"></textarea>
+        <div class="papursButton sendButton">Send</div>
       </div>
     </div>
+    <script src="/public/static/scripts/contact.js"></script>
   </body>
 </html>

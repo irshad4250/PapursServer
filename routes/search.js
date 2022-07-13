@@ -95,4 +95,35 @@ function getResults(searchText) {
   })
 }
 
+function getResultsTest(searchText) {
+  return new Promise(async (resolve, reject) => {
+    const results = await getQpCollection()
+      .aggregate([
+        {
+          $search: {
+            index: "autocomplete",
+            autocomplete: {
+              query: searchText,
+              path: "body",
+              // tokenOrder: "sequential",
+            },
+          },
+        },
+        {
+          $project: {
+            pdfname: 1,
+            year: 1,
+            yearInt: 1,
+            subject: 1,
+            variant: 1,
+          },
+        },
+        { $limit: 10 },
+        // { $sort: { yearInt: -1 } },
+      ])
+      .toArray()
+    resolve(results)
+  })
+}
+
 module.exports = router

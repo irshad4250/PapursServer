@@ -43,5 +43,6 @@ h1 {
 @media screen and (max-width: 600px) {
   .news {
     width: 100%;
+    border-radius: 0;
   }
 }
