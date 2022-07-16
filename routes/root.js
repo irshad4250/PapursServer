@@ -1,3 +1,4 @@
+require("dotenv").config()
 const express = require("express")
 const router = express.Router()
 const { getQpCollection } = require("../utils/utils")
@@ -14,6 +15,10 @@ router.get("/home", (req, res) => {
 
 router.get("/news", (req, res) => {
   res.render("news")
+})
+
+router.get("/node", (req, res) => {
+  res.send(process.env.NODE_ENV || "development")
 })
 
 router.post("/contact", async (req, res) => {

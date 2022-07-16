@@ -38,23 +38,23 @@ function connectToMongo() {
 function cookieMiddleware(req, res, next) {
   let pid = req.cookies.pid
 
-  if (req.path == "/favicon.ico") {
-    return
-  }
+  // if (req.path == "/favicon.ico") {
+  //   return
+  // }
 
-  if (!req.session.old) {
-    if (!pid) {
-      pid = makeId(30)
-      res.cookie("pid", pid, {
-        maxAge: 2 * 365 * 24 * 60 * 60 * 1000,
-        httpOnly: true,
-      })
-    }
+  // if (!req.session.old) {
+  //   if (!pid) {
+  //     pid = makeId(30)
+  //     res.cookie("pid", pid, {
+  //       maxAge: 2 * 365 * 24 * 60 * 60 * 1000,
+  //       httpOnly: true,
+  //     })
+  //   }
 
-    const userlog = new Userlog({ cookieId: pid })
-    userlog.save()
-    req.session.old = true
-  }
+  //   const userlog = new Userlog({ cookieId: pid })
+  //   userlog.save()
+  //   req.session.old = true
+  // }
 
   next()
   return
