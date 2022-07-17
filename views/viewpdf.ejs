@@ -29,6 +29,19 @@
       .main {
         height: 100%;
       }
+      .warnBox {
+        position: absolute;
+        left: 0;
+        top: 55px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+      }
+      .warnMessage {
+        padding: 5px;
+        font-family: var(--fontAccent);
+      }
     </style>
 
     <script
@@ -41,6 +54,9 @@
   <body>
     <%-include("./partials/noInputNavbar.ejs")%>
     <div class="main">
+      <div class="warnBox">
+        <div class="warnMessage">Reload page if paper is not loaded.</div>
+      </div>
       <iframe
         src="https://docs.google.com/viewerng/viewer?url=<%=pdfUrl%>&embedded=true"
         width="100%"
