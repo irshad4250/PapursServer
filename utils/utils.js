@@ -8,6 +8,28 @@ const Userlog = require("../schemas/userlog")
 
 let qpCollection
 
+const ALevelSubjects = [
+  "Chemistry (9701)",
+  "Computer Science (for final examination in 2021) (9608)",
+  "General Paper 8004 (AS Level only) (8004)",
+  "Design and Technology (9705)",
+  "Mathematics (9709)",
+  "Physics (9702)",
+  "English General Paper (AS Level only) (8021)",
+]
+const OLevelSubjects = [
+  "Economics (2281)",
+  "Chemistry (5070)",
+  "Computer Science (2210)",
+  "Design and Technology (6043)",
+  "Mathematics - Additional (4037)",
+  "Physics (5054)",
+  "Mathematics D (4024)",
+  "English (1123)",
+]
+
+ALevelSubjects.sort()
+OLevelSubjects.sort()
 /**
  * Attribute for making requests to mongodb.
  */
@@ -38,26 +60,28 @@ function connectToMongo() {
 function cookieMiddleware(req, res, next) {
   let pid = req.cookies.pid
 
-  // if (req.path == "/favicon.ico") {
-  //   return
-  // }
+  if (req.path == "/favicon.ico") {
+    return
+  }
 
-  // if (!req.session.old) {
-  //   if (!pid) {
-  //     pid = makeId(30)
-  //     res.cookie("pid", pid, {
-  //       maxAge: 2 * 365 * 24 * 60 * 60 * 1000,
-  //       httpOnly: true,
-  //     })
-  //   }
+  if (!req.session.old) {
+    if (!pid) {
+      pid = makeId(30)
+      res.cookie("pid", pid, {
+        maxAge: 2 * 365 * 24 * 60 * 60 * 1000,
+        httpOnly: true,
+      })
+    }
 
-  //   const userlog = new Userlog({ cookieId: pid })
-  //   userlog.save()
-  //   req.session.old = true
-  // }
+    const userlog = new Userlog({
+      cookieId: pid,
+      source: req.query.src == "sm" ? "Social Media" : null,
+    })
+    userlog.save()
+    req.session.old = true
+  }
 
   next()
-  return
 }
 
 function makeId(length) {
@@ -70,4 +94,10 @@ function makeId(length) {
   return result
 }
 
-module.exports = { connectToMongo, getQpCollection, cookieMiddleware }
+module.exports = {
+  connectToMongo,
+  getQpCollection,
+  cookieMiddleware,
+  ALevelSubjects,
+  OLevelSubjects,
+}

@@ -1,0 +1,126 @@
+<style>
+  .filterContainer {
+    position: fixed;
+    top: 100%;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: transparent;
+    font-family: var(--fontAccent);
+    transition: 350ms ease-in-out;
+    display: flex;
+    z-index: 101;
+  }
+
+  .filterBox {
+    height: 300px;
+    width: 250px;
+    background-color: var(--bodyColor);
+    border-radius: 20px;
+    display: inline;
+    box-sizing: border-box;
+    padding: 5px;
+    box-shadow: 0px 0px 20px 1px;
+  }
+
+  .filterLabel {
+    width: fit-content;
+    margin-left: 35px;
+  }
+
+  .filterInput {
+    width: 170px;
+    height: 20px;
+    margin: auto;
+    border-radius: 5px;
+    border: solid 1px black;
+    transition: 100ms;
+    padding: 5px;
+    padding-left: 3px;
+  }
+  .filterInput:focus {
+    border: solid 1px var(--colorAccent);
+    box-shadow: 0px 0px 12px 1px #c1c1c1;
+  }
+
+  .filterInputContainer {
+    margin: auto;
+    width: fit-content;
+    margin-bottom: 10px;
+  }
+
+  .filterApplyButton {
+    width: fit-content;
+    padding-left: 7px;
+    padding-right: 7px;
+    margin: 0;
+  }
+  .examinationInput,
+  .subjectInput,
+  .yearInput {
+    height: 28px;
+  }
+  .buttonContainers {
+    display: flex;
+    flex-direction: row;
+    gap: 20px;
+    align-items: center;
+    justify-content: center;
+  }
+  .filterCancelButton {
+    color: black;
+    background-color: #c1c1c1;
+  }
+  .filterCancelButton:hover {
+    background-color: #e8e8e8;
+  }
+
+  .filterCancelButton,
+  .filterApplyButton {
+    width: 70px;
+  }
+</style>
+
+<div class="filterContainer">
+  <div class="filterBox">
+    <div class="filterLabel examinationLabel">Examination</div>
+
+    <div class="filterInputContainer">
+      <select class="filterInput examinationInput">
+        <option value="Any">Any</option>
+        <option value="A">A Level</option>
+        <option Value="O">O Level</option>
+      </select>
+    </div>
+
+    <div class="filterLabel subjectLabel">Subject</div>
+    <div class="filterInputContainer">
+      <select
+        class="filterInput subjectInput"
+        disabled="true"
+        aria-placeholder="Select subject(optional)"
+      >
+        <option value="none">None</option>
+      </select>
+    </div>
+
+    <div class="filterLabel subjectLabel">Year</div>
+    <div class="filterInputContainer">
+      <select
+        class="filterInput yearInput"
+        disabled="true"
+        aria-placeholder="Select year(optional)"
+      >
+        <option value="none">None</option>
+      </select>
+    </div>
+
+    <div class="buttonContainers">
+      <div class="papursButton filterApplyButton">Apply</div>
+      <div class="papursButton filterCancelButton">Reset</div>
+    </div>
+  </div>
+</div>

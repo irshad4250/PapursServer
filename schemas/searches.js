@@ -1,13 +1,13 @@
 const mongoose = require("mongoose")
 const Schema = mongoose.Schema
 
-const userlogSchema = new Schema(
+const searchesSchema = new Schema(
   {
-    cookieId: {
+    query: {
       type: String,
       required: true,
     },
-    source: {
+    cookieId: {
       type: String,
       required: false,
     },
@@ -15,5 +15,5 @@ const userlogSchema = new Schema(
   { timestamps: true }
 )
 
-const Userlog = mongoose.model("Userlogs", userlogSchema)
-module.exports = Userlog
+const Search = mongoose.model("Searches", searchesSchema)
+module.exports = Search

@@ -17,8 +17,43 @@ router.get("/news", (req, res) => {
   res.render("news")
 })
 
-router.get("/node", (req, res) => {
-  res.send(process.env.NODE_ENV || "development")
+router.get("/about", (req, res) => {
+  res.render("about")
+})
+
+router.get("/view/:pdfName", async (req, res) => {
+  const pdfName = req.params.pdfName
+  const type = req.query.type
+
+  const pdfObject = await getPdfObject()
+
+  if (!pdfObject || pdfObject.length === 0) {
+    res.status(404).render("404")
+    return
+  }
+
+  const pdf = pdfObject[0]
+  const grade = pdf.grade ? pdf.grade : "A"
+  const pdfLink = `https://papers.gceguide.com/${grade} Levels/${pdf.subject}/${
+    pdf.yearInt
+  }/${type == "ms" ? pdf.pdfname.replace("qp", "ms") : pdf.pdfname}`
+
+  res.render("viewpdf", { pdfUrl: pdfLink })
+
+  function getPdfObject() {
+    return new Promise((resolve, reject) => {
+      getQpCollection()
+        .find({ pdfname: { $eq: pdfName } })
+        .project({ body: 0 })
+        .toArray((err, result) => {
+          if (err) {
+            resolve(null)
+          } else {
+            resolve(result)
+          }
+        })
+    })
+  }
 })
 
 router.post("/contact", async (req, res) => {

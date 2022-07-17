@@ -99,63 +99,6 @@
   height: fit-content;
 }
 
-.filterContainer {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: rgb(0, 0, 0, 0.5);
-  font-family: var(--fontAccent);
-  display: none;
-}
-
-.filterBox {
-  height: 300px;
-  width: 250px;
-  background-color: var(--bodyColor);
-  border-radius: 20px;
-  box-shadow: 0px 0px 5px 1px;
-  display: inline;
-  box-sizing: border-box;
-  padding: 5px;
-}
-
-.filterLabel {
-  width: fit-content;
-  margin-left: 35px;
-}
-
-.filterInput {
-  width: 170px;
-  height: 20px;
-  margin: auto;
-  border-radius: 5px;
-  border: solid 1px black;
-  transition: 100ms;
-  padding: 5px;
-  padding-left: 3px;
-}
-.filterInput:focus {
-  border: solid 2px var(--colorAccent);
-}
-
-.filterInputContainer {
-  margin: auto;
-  width: fit-content;
-  margin-bottom: 10px;
-}
-
-.filterApplyButton {
-  width: fit-content;
-  padding-left: 7px;
-  padding-right: 7px;
-  margin: auto;
-}
-
 .howToUseBox {
   display: flex;
   margin: auto;
@@ -178,6 +121,7 @@
   max-width: 100%;
   font-weight: bold;
   font-size: 20px;
+  text-align: center;
 }
 
 @media screen and (max-width: 600px) {

@@ -12,32 +12,37 @@ app.use(express.urlencoded({ extended: true }))
 app.use("/public", express.static("public"))
 app.use(express.json())
 app.use(cookieParser())
-app.use(
-  session({
-    secret: "lmaolmao",
-    resave: false,
-    saveUninitialized: true,
-    cookie: { httpOnly: true, expires: false },
-    store: MongoStore.create({
-      mongoUrl: process.env.MONGODB_URI,
-      autoRemove: "interval",
-      autoRemoveInterval: 10,
-    }),
-  })
-)
-app.use(cookieMiddleware)
+
+if (process.env.NODE_ENV == "production") {
+  app.use(
+    session({
+      secret: "lmaolmao",
+      resave: false,
+      saveUninitialized: true,
+      cookie: { httpOnly: true, maxAge: 60 * 60 * 1000 },
+      store: MongoStore.create({
+        mongoUrl: process.env.MONGODB_URI,
+        autoRemove: "interval",
+        autoRemoveInterval: 10,
+      }),
+    })
+  )
+  app.use(cookieMiddleware)
+}
 
 app.set("view engine", "ejs")
 app.engine("ejs", require("ejs").__express)
 
 const rootRouter = require("./routes/root")
 const searchRouter = require("./routes/search")
+const apiRouter = require("./routes/api")
 
 app.use("/", rootRouter)
 app.use("/search", searchRouter)
+app.use("/api", apiRouter)
 
 app.get("*", (req, res) => {
-  res.send("error 404 irs not found")
+  res.status(404).render("404")
 })
 
 connectToMongo().then((successful) => {

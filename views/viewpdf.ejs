@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Papurs news about website." />
+    <meta name="keywords" content="Papurs, News" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Maven+Pro&family=Noto+Sans&display=swap"
+      rel="stylesheet"
+    />
+
+    <link rel="stylesheet" href="../public/static/styles/root.css" />
+    <style>
+      html {
+        height: 100vh;
+        overflow: hidden;
+      }
+      .pdfContainer {
+        height: calc(100% - 52px);
+        margin: 0;
+        padding: 0;
+        border: 0;
+        width: 100vw;
+      }
+      .main {
+        height: 100%;
+      }
+    </style>
+
+    <script
+      async
+      src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8618691594432056"
+      crossorigin="anonymous"
+    ></script>
+    <title>Papurs | View</title>
+  </head>
+  <body>
+    <%-include("./partials/noInputNavbar.ejs")%>
+    <div class="main">
+      <iframe
+        src="https://docs.google.com/viewerng/viewer?url=<%=pdfUrl%>&embedded=true"
+        width="100%"
+        class="pdfContainer"
+        scrolling="yes"
+        frameborder="0"
+      ></iframe>
+    </div>
+  </body>
+</html>

@@ -43,6 +43,15 @@
         <div class="searchButton">Search</div>
 
         <div class="howToUseBox">
+          <h2>Papurs.com is now our new domain!</h2>
+          <h2>New Update</h2>
+          <div>
+            Papurs results are now extremely precise. You can now search fewer
+            words and get the same accurate results. Maths searches have also
+            been improved. We also added the filter feature, you can now press
+            the funnel icon to filter you search results. O Level papers are now
+            availabe.
+          </div>
           <h2>How to use</h2>
           <div>1. Enter question. For example: what is a mole.</div>
           <div>2. Press search.</div>
@@ -58,36 +67,21 @@
             airport" will more unique than "what is a mole". Therefore bringing
             more accurate results.
           </div>
+          <h2>Papers available</h2>
           <div>
-            Please note only these papers are available for the time being:
-            Physics (9702), Chemistry (9701), Design and Technology (9705),
-            Computer Science (9608) and Mathematics (9709).
+            (A Level): Physics (9702), Chemistry (9701), Design and Technology
+            (9705), Computer Science (9608), Mathematics (9709) and English
+            General Paper(8021).<br />
+            (O Level): Economics (2281), Chemistry (5070), Computer Science
+            (2210), Design and Technology (6043), Mathematics Additional (4037),
+            Physics (5054), Mathematics D (4024) and English (1123).
           </div>
         </div>
-
-        <div class="filterContainer">
-          <div class="filterBox">
-            <div class="filterLabel examinationLabel">Examination</div>
-            <div class="filterInputContainer">
-              <input type="text" class="filterInput examinationInput" />
-            </div>
-
-            <div class="filterLabel subjectLabel">Subject</div>
-            <div class="filterInputContainer">
-              <input type="text" class="filterInput subjectInput" />
-            </div>
-
-            <div class="filterLabel subjectLabel">Year</div>
-            <div class="filterInputContainer">
-              <input type="text" class="filterInput yearInput" />
-            </div>
-
-            <div class="papursButton filterApplyButton">Apply</div>
-          </div>
-        </div>
+        <%-include("../views/partials/filter.ejs")%>
       </div>
     </div>
 
+    <script src="../public/static/scripts/searchInput.js"></script>
     <script src="../public/static/scripts/home.js"></script>
   </body>
 </html>
