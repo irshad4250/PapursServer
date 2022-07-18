@@ -55,6 +55,21 @@ router.get("/", async (req, res) => {
       const rawQpLink = link + result.pdfname
       const rawMsLink = link + result.pdfname.replace("qp", "ms")
 
+      const textIndex = result.body.indexOf(q)
+      let resultText
+
+      if (textIndex !== -1) {
+        let textLastIndex
+        textLastIndex = textIndex + 220
+        if (textLastIndex > result.body.length) {
+          textLastIndex = result.body.length
+        }
+        resultText = result.body.substring(textIndex, textLastIndex) + "..."
+      } else {
+        resultText = ""
+      }
+
+      object.resultText = resultText
       object.qpLink = qpLink
       object.msLink = msLink
       object.rawQpLink = rawQpLink
@@ -147,6 +162,7 @@ function getSearchJsonArr(searchText) {
         subject: 1,
         variant: 1,
         grade: 1,
+        body: 1,
       },
     },
   ]

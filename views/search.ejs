@@ -35,6 +35,15 @@
           <%=result.title %>
         </div>
         <div class="resultSubject"><%=result.subject %></div>
+        <% if (result.resultText) { %>
+        <div class="resultText"><%=result.resultText %></div>
+        <% }else { %>
+        <div class="noResultText">
+          No matching text found, check your search for errors, this paper may
+          still contain the question.
+        </div>
+        <%}%>
+
         <div class="resultRedirects">
           <a
             class="linkRow"
