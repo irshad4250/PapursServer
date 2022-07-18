@@ -103,6 +103,7 @@ a {
   font-size: 10px;
   font-style: italic;
   text-align: left;
+  padding: 3px;
 }
 
 @media screen and (max-width: 800px) {
