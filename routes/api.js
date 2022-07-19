@@ -1,27 +1,23 @@
 const express = require("express")
 const router = express.Router()
-const {
-  OLevelSubjects,
-  ALevelSubjects,
-  getQpCollection,
-} = require("../utils/utils")
+const { getYearArr, getSubjects } = require("../utils/utils")
 
-router.post("/getSubjectsLevel", (req, res) => {
+router.post("/getSubjectsLevel", async (req, res) => {
   const level = req.body.level
   if (!level) {
     res.send({ error: true, info: "Exam level is required" })
     return
   }
 
-  let toReturn
-
-  if (level == "O") {
-    toReturn = OLevelSubjects
-  } else if (level == "A") {
-    toReturn = ALevelSubjects
+  if (level != "O" && level != "A") {
+    res.send({ error: true, info: "Exam level is in wrong format" })
+    return
   }
 
-  res.send({ error: false, data: toReturn })
+  const subjects = await getSubjects(level)
+  subjects.sort()
+
+  res.send({ error: false, data: subjects })
 })
 
 router.post("/getYears", async (req, res) => {
@@ -34,19 +30,6 @@ router.post("/getYears", async (req, res) => {
   const years = await getYearArr(subject)
 
   res.send({ error: false, data: years })
-
-  function getYearArr() {
-    return new Promise((resolve, reject) => {
-      getQpCollection()
-        .distinct("yearInt", { subject: subject })
-        .then((r) => {
-          resolve(r)
-        })
-        .catch((err) => {
-          resolve([])
-        })
-    })
-  }
 })
 
 module.exports = router

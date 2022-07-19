@@ -8,28 +8,7 @@ const Userlog = require("../schemas/userlog")
 
 let qpCollection
 
-const ALevelSubjects = [
-  "Chemistry (9701)",
-  "Computer Science (for final examination in 2021) (9608)",
-  "General Paper 8004 (AS Level only) (8004)",
-  "Design and Technology (9705)",
-  "Mathematics (9709)",
-  "Physics (9702)",
-  "English General Paper (AS Level only) (8021)",
-]
-const OLevelSubjects = [
-  "Economics (2281)",
-  "Chemistry (5070)",
-  "Computer Science (2210)",
-  "Design and Technology (6043)",
-  "Mathematics - Additional (4037)",
-  "Physics (5054)",
-  "Mathematics D (4024)",
-  "English (1123)",
-]
 
-ALevelSubjects.sort()
-OLevelSubjects.sort()
 /**
  * Attribute for making requests to mongodb.
  */
@@ -94,10 +73,36 @@ function makeId(length) {
   return result
 }
 
+function getSubjects(grade) {
+  return new Promise((resolve, reject) => {
+    getQpCollection()
+      .distinct("subject", { grade: grade })
+      .then((r) => {
+        resolve(r)
+      })
+      .catch((err) => {
+        resolve([])
+      })
+  })
+}
+
+function getYearArr(subject) {
+  return new Promise((resolve, reject) => {
+    getQpCollection()
+      .distinct("yearInt", { subject: subject })
+      .then((r) => {
+        resolve(r)
+      })
+      .catch((err) => {
+        resolve([])
+      })
+  })
+}
+
 module.exports = {
   connectToMongo,
   getQpCollection,
   cookieMiddleware,
-  ALevelSubjects,
-  OLevelSubjects,
+  getSubjects,
+  getYearArr,
 }
