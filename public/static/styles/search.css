@@ -95,7 +95,7 @@ a {
   color: #787878;
   box-sizing: border-box;
   padding: 5px;
-  text-align: justify;
+  text-align: left;
 }
 
 .noResultText {

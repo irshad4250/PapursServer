@@ -55,7 +55,9 @@ router.get("/", async (req, res) => {
       const rawQpLink = link + result.pdfname
       const rawMsLink = link + result.pdfname.replace("qp", "ms")
 
-      const textIndex = result.body.indexOf(q.replaceAll(".", ""))
+      const textIndex = result.body
+        .toLowerCase()
+        .indexOf(q.toLowerCase().replaceAll(".", ""))
       let resultText
 
       if (textIndex !== -1) {
