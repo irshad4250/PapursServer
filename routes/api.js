@@ -1,6 +1,6 @@
 const express = require("express")
 const router = express.Router()
-const { getYearArr, getSubjects } = require("../utils/utils")
+const { getQpCollection } = require("../utils/utils")
 
 router.post("/getSubjectsLevel", async (req, res) => {
   const level = req.body.level
@@ -31,5 +31,31 @@ router.post("/getYears", async (req, res) => {
 
   res.send({ error: false, data: years })
 })
+
+function getSubjects(grade) {
+  return new Promise((resolve, reject) => {
+    getQpCollection()
+      .distinct("subject", { grade: grade })
+      .then((r) => {
+        resolve(r)
+      })
+      .catch((err) => {
+        resolve([])
+      })
+  })
+}
+
+function getYearArr(subject) {
+  return new Promise((resolve, reject) => {
+    getQpCollection()
+      .distinct("yearInt", { subject: subject })
+      .then((r) => {
+        resolve(r)
+      })
+      .catch((err) => {
+        resolve([])
+      })
+  })
+}
 
 module.exports = router

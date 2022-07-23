@@ -73,36 +73,11 @@ function makeId(length) {
   return result
 }
 
-function getSubjects(grade) {
-  return new Promise((resolve, reject) => {
-    getQpCollection()
-      .distinct("subject", { grade: grade })
-      .then((r) => {
-        resolve(r)
-      })
-      .catch((err) => {
-        resolve([])
-      })
-  })
-}
 
-function getYearArr(subject) {
-  return new Promise((resolve, reject) => {
-    getQpCollection()
-      .distinct("yearInt", { subject: subject })
-      .then((r) => {
-        resolve(r)
-      })
-      .catch((err) => {
-        resolve([])
-      })
-  })
-}
 
 module.exports = {
   connectToMongo,
   getQpCollection,
   cookieMiddleware,
-  getSubjects,
-  getYearArr,
+
 }

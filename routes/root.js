@@ -17,6 +17,88 @@ router.get("/news", (req, res) => {
   res.render("news")
 })
 
+router.get("/pastPapers", (req, res) => {
+  res.render("pastPapers")
+})
+
+router.get("/pastPapers/papers", async (req, res) => {
+  const { subject, year } = req.query
+
+  if (!subject || !year) {
+  }
+
+  const papers = await getPapers(subject, year)
+  if (papers.length === 0) {
+    res.render("404")
+    return
+  }
+
+  const finalResults = papers.map((result) => {
+    let object = {}
+    object.subject = result.subject
+
+    let month
+    let prefix = result.year.slice(0, 1)
+
+    if (prefix == "m") {
+      month = "March"
+    } else if (prefix == "s") {
+      month = "June"
+    } else if (prefix == "w") {
+      month = "Nov"
+    }
+
+    let title = month + " " + result.yearInt.toString() + " P" + result.variant
+    object.title = title
+
+    const link =
+      "https://papers.gceguide.com/A%20Levels/" +
+      result.subject +
+      "/" +
+      result.yearInt +
+      "/"
+
+    const qpLink = "/view/" + result.pdfname
+    const msLink = "/view/" + result.pdfname + "?type=ms"
+
+    const rawQpLink = link + result.pdfname
+    const rawMsLink = link + result.pdfname.replace("qp", "ms")
+
+    object.qpLink = qpLink
+    object.msLink = msLink
+    object.rawQpLink = rawQpLink
+    object.rawMsLink = rawMsLink
+
+    return object
+  })
+
+  res.render("papers", { results: finalResults, subject: subject, year: year })
+
+  function getPapers(subject, year) {
+    return new Promise(async (resolve, reject) => {
+      const results = await getQpCollection()
+        .find(
+          {
+            $and: [{ subject: subject }, { yearInt: parseInt(year) }],
+          },
+          {
+            projection: {
+              subject: 1,
+              yearInt: 1,
+              year: 1,
+              variant: 1,
+              pdfname: 1,
+            },
+          }
+        )
+        .sort({ variant: 1 })
+        .toArray()
+
+      resolve(results)
+    })
+  }
+})
+
 router.get("/about", (req, res) => {
   res.render("about")
 })

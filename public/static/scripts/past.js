@@ -1,92 +1,18 @@
-const searchButton = document.querySelector(".searchButton")
-const searchBox = document.querySelector(".searchBox")
-
-document.addEventListener("DOMContentLoaded", () => {
-  searchButton.addEventListener("click", go)
-  searchBox.addEventListener("keydown", (event) => {
-    if (event.keyCode === 13) {
-      go()
-    }
-  })
-})
-
-function go() {
-  const inputVal = searchBox.value
-
-  let filterString = ""
-
-  if (examValue && examValue != "Any") {
-    filterString += `&exam=${examValue}`
-  }
-
-  if (subjectValue && subjectValue != "Any") {
-    filterString += `&subject=${subjectValue}`
-  }
-
-  if (yearValue && yearValue != "Any") {
-    filterString += `&year=${yearValue}`
-  }
-
-  if (!inputVal) return
-
-  const url = `/search?q=${encodeURIComponent(inputVal)}` + filterString
-
-  window.location.href = url
-}
-
-const closeNavButton = document.querySelector(".closeNavButton")
-const burger = document.querySelector(".burgerContainer")
-const rightSide = document.querySelector(".rightSide")
-
-if (burger) {
-  burger.addEventListener("click", () => {
-    rightSide.style.top = 0
-  })
-
-  closeNavButton.addEventListener("click", () => {
-    rightSide.style.top = "100%"
-  })
-}
-
-// for filter
 const examInput = document.querySelector(".examinationInput")
 const subjectInput = document.querySelector(".subjectInput")
 const yearInput = document.querySelector(".yearInput")
-const filterContainer = document.querySelector(".filterContainer")
+
+const goButton = document.querySelector(".goButton")
 
 let subjectValue = null
 let yearValue = null
 let examValue = null
-
-document.querySelector(".filterApplyButton").addEventListener("click", () => {
-  filterContainer.style.top = "100%"
-})
-
-document.querySelector(".funnelIcon").addEventListener("click", () => {
-  filterContainer.style.top = "0"
-})
-
-document.querySelector(".filterCancelButton").addEventListener("click", () => {
-  filterContainer.style.top = "100%"
-  examValue = null
-  subjectValue = null
-  yearValue = null
-
-  examInput.value = "Any"
-  subjectInput.innerHTML = returnOptionNode("None")
-  yearInput.innerHTML = returnOptionNode("None")
-
-  subjectInput.disabled = true
-  yearInput.disabled = true
-})
 
 examInput.addEventListener("change", () => {
   examValue = examInput.value
 
   subjectInput.innerHTML = ""
   yearInput.innerHTML = ""
-  subjectInput.disabled = true
-  yearInput.disabled = true
 
   yearValue = "Any"
   subjectValue = "Any"
@@ -99,13 +25,29 @@ subjectInput.addEventListener("change", () => {
 
   yearInput.innerHTML = ""
   yearValue = "Any"
-  yearInput.disabled = true
 
   postSubjectValueAndGetYears()
 })
 
 yearInput.addEventListener("change", () => {
   yearValue = yearInput.value
+})
+
+goButton.addEventListener("click", () => {
+  if (
+    !subjectValue ||
+    !yearValue ||
+    !examValue ||
+    subjectValue == "Any" ||
+    yearValue == "Any" ||
+    examValue == "Any"
+  ) {
+    alert("Please fill all boxes!")
+    return
+  }
+
+  const link = `/pastPapers/papers?subject=${subjectValue}&year=${yearValue}`
+  window.location.href = link
 })
 
 function postReq(route, JSONData) {
@@ -165,5 +107,3 @@ function returnOptionNode(value) {
   const string = `<option value="${value}">${value}</option>`
   return string
 }
-
-

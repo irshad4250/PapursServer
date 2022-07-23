@@ -76,6 +76,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  z-index: 10;
 }
 
 .searchButton:hover {
@@ -134,9 +135,6 @@
   }
   .papursTitle {
     margin-top: 15%;
-  }
-  .searchButton {
-    transform: scale(1.15);
   }
   .howToUseBox {
     width: 100%;

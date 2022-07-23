@@ -56,8 +56,9 @@ router.get("/", async (req, res) => {
       const rawMsLink = link + result.pdfname.replace("qp", "ms")
 
       const textIndex = result.body
+        .replace(/[^a-z0-9 ]/gi, "")
         .toLowerCase()
-        .indexOf(q.toLowerCase().replaceAll(".", ""))
+        .indexOf(q.toLowerCase().replace(/[^a-z0-9 ]/gi, ""))
       let resultText
 
       if (textIndex !== -1) {
@@ -66,7 +67,10 @@ router.get("/", async (req, res) => {
         if (textLastIndex > result.body.length) {
           textLastIndex = result.body.length
         }
-        resultText = result.body.substring(textIndex, textLastIndex) + "..."
+        resultText =
+          result.body
+            .replace(/[^a-z0-9 ]/gi, "")
+            .substring(textIndex, textLastIndex) + "..."
       } else {
         resultText = ""
       }

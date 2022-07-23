@@ -1,0 +1,64 @@
+h1,
+h3 {
+  font-family: var(--titleFont);
+  margin: 0;
+  padding: 0;
+  width: fit-content;
+  margin: auto;
+}
+
+h1 {
+  margin-top: 20px;
+}
+
+h3 {
+  margin-top: 30px;
+  font-size: 20px;
+}
+
+p {
+  margin: auto;
+  margin-top: 20px;
+  max-width: 400px;
+  font-family: var(--fontAccent);
+}
+
+.papursButton {
+  width: 180px;
+  margin: auto;
+}
+
+.filterLabel {
+  font-family: var(--fontAccent);
+}
+
+.filterInput {
+  width: 170px;
+  height: 30px;
+  margin: auto;
+  border-radius: 5px;
+  border: solid 1px rgb(204, 204, 204);
+  transition: 200ms;
+  padding: 5px;
+  padding-left: 3px;
+  appearance: none;
+  outline: none;
+}
+
+.filterInput:focus {
+  border: solid 1px var(--colorAccent);
+  box-shadow: 0px 0px 8px 1px #c1c1c1;
+}
+
+.filterContainer {
+  width: fit-content;
+  margin: auto;
+  margin-top: 30px;
+}
+
+.buttonContainer {
+  display: flex;
+  flex-direction: column;
+  margin-top: 20px;
+  gap: 5px;
+}
