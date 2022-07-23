@@ -14,6 +14,9 @@ examInput.addEventListener("change", () => {
   subjectInput.innerHTML = ""
   yearInput.innerHTML = ""
 
+  subjectInput.disabled = true
+  yearInput.disabled = true
+
   yearValue = "Any"
   subjectValue = "Any"
 
@@ -24,6 +27,7 @@ subjectInput.addEventListener("change", () => {
   subjectValue = subjectInput.value
 
   yearInput.innerHTML = ""
+  yearInput.disabled = true
   yearValue = "Any"
 
   postSubjectValueAndGetYears()

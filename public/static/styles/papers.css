@@ -77,4 +77,12 @@ h1 {
   font-family: var(--titleFont);
   margin-top: 10px;
   margin-bottom: 10px;
+  text-align: center;
+}
+
+@media screen and (max-width: 800px) {
+  .resultBox {
+    width: 100%;
+    border-radius: 0;
+  }
 }
