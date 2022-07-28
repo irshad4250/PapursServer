@@ -5,7 +5,8 @@ const userlogSchema = new Schema(
   {
     cookieId: {
       type: String,
-      required: true,
+      required: false,
+      unique: true,
     },
     source: {
       type: String,

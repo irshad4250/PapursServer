@@ -104,6 +104,107 @@ router.get("/", async (req, res) => {
   }
 })
 
+router.post("/", async (req, res) => {
+  const q = req.body.q
+  const cookieId = req.body.cookieId
+
+  const year = req.body.year
+  const subject = req.body.subject
+  const examLevel = req.body.exam
+
+  if (!q) {
+    res.send({ error: true, info: "No query provided." })
+    return
+  }
+
+  if (process.env.NODE_ENV == "production") {
+    const search = new Search({ query: q, cookieId: cookieId })
+    search.save()
+  }
+  const results = await getResultsV3(q, examLevel, subject, year)
+
+  if (results.length != 0) {
+    const finalResults = results.map((result) => {
+      let object = {}
+      object.subject = result.subject
+
+      let month
+      let prefix = result.year.slice(0, 1)
+
+      if (prefix == "m") {
+        month = "March"
+      } else if (prefix == "s") {
+        month = "June"
+      } else if (prefix == "w") {
+        month = "Nov"
+      }
+
+      let title =
+        month + " " + result.yearInt.toString() + " P" + result.variant
+      object.title = title
+
+      const link =
+        "https://papers.gceguide.com/A%20Levels/" +
+        result.subject +
+        "/" +
+        result.yearInt +
+        "/"
+
+      const qpLink = "/ViewPdf?name=" + result.pdfname
+      const msLink = "/ViewPdf?name=" + result.pdfname + "&type=ms"
+
+      const rawQpLink = link + result.pdfname
+      const rawMsLink = link + result.pdfname.replace("qp", "ms")
+
+      const textIndex = result.body
+        .replace(/[^a-z0-9 ]/gi, "")
+        .toLowerCase()
+        .indexOf(q.toLowerCase().replace(/[^a-z0-9 ]/gi, ""))
+      let resultText
+
+      if (textIndex !== -1) {
+        let textLastIndex
+        textLastIndex = textIndex + 220
+        if (textLastIndex > result.body.length) {
+          textLastIndex = result.body.length
+        }
+        resultText =
+          result.body
+            .replace(/[^a-z0-9 ]/gi, "")
+            .substring(textIndex, textLastIndex) + "..."
+      } else {
+        resultText = ""
+      }
+
+      object.resultText = resultText
+      object.qpLink = qpLink
+      object.msLink = msLink
+      object.rawQpLink = rawQpLink
+      object.rawMsLink = rawMsLink
+
+      return object
+    })
+
+    res.send({
+      error: false,
+      q: q,
+      results: finalResults,
+      subject: subject,
+      exam: examLevel,
+      year: year,
+    })
+  } else {
+    res.send({
+      error: false,
+      q: q,
+      results: [],
+      subject: subject,
+      exam: examLevel,
+      year: year,
+    })
+  }
+})
+
 function getYearJson(year) {
   return { $match: { yearInt: { $eq: parseInt(year) } } }
 }
