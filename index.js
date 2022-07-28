@@ -14,6 +14,8 @@ app.use(
     { origin: "http://localhost:3000" },
     { origin: "http://www.papurs.com" },
     { origin: "http://papurs.com" },
+    { origin: "https://www.papurs.com" },
+    { origin: "https://papurs.com" },
   ])
 )
 app.use(express.urlencoded({ extended: true }))
