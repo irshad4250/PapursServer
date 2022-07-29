@@ -139,8 +139,8 @@ router.post("/getPapers", async (req, res) => {
       result.yearInt +
       "/"
 
-    const qpLink = "/view/" + result.pdfname
-    const msLink = "/view/" + result.pdfname + "?type=ms"
+    const qpLink = "/ViewPdf?name=" + result.pdfname
+    const msLink = "/ViewPdf?name=" + result.pdfname + "&type=ms"
 
     const rawQpLink = link + result.pdfname
     const rawMsLink = link + result.pdfname.replace("qp", "ms")
