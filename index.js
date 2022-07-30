@@ -30,7 +30,7 @@ app.use("/search", searchRouter)
 app.use("/api", apiRouter)
 
 app.get("*", (req, res) => {
-  res.status(404).render("404")
+  res.status(404).send("404")
 })
 
 connectToMongo().then((successful) => {
