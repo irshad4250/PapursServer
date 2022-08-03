@@ -8,7 +8,6 @@ const Userlog = require("../schemas/userlog")
 
 let qpCollection
 
-
 /**
  * Attribute for making requests to mongodb.
  */
@@ -73,11 +72,9 @@ function makeId(length) {
   return result
 }
 
-
-
 module.exports = {
   connectToMongo,
   getQpCollection,
   cookieMiddleware,
-
+  makeId,
 }

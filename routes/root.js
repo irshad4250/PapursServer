@@ -1,7 +1,7 @@
 require("dotenv").config()
 const express = require("express")
 const router = express.Router()
-const { getQpCollection } = require("../utils/utils")
+const { getQpCollection, makeId } = require("../utils/utils")
 const Userlog = require("../schemas/userlog")
 const axios = require("axios")
 const https = require("https")
@@ -210,7 +210,9 @@ router.get("/getPdf", async (req, res) => {
     rejectUnauthorized: false,
   })
 
-  const writer = fs.createWriteStream(__dirname + "/pdfs/m.pdf")
+  const pdfPath = "/pdfs/" + makeId(7) + ".pdf"
+
+  const writer = fs.createWriteStream(__dirname + pdfPath)
 
   axios
     .get(url, { httpsAgent: agent, responseType: "stream" })
@@ -224,10 +226,15 @@ router.get("/getPdf", async (req, res) => {
           res.send({ error: true, info: "Could not download pdf." })
           reject(err)
         })
-        writer.on("close", () => {
+        writer.on("close", async () => {
           if (!error) {
-            res.sendFile(__dirname + "/pdfs/m.pdf")
+            res.sendFile(__dirname + pdfPath)
             resolve(true)
+            try {
+              setTimeout(() => {
+                fs.unlinkSync(__dirname + pdfPath)
+              }, 5000)
+            } catch (err) {}
           }
         })
       })
