@@ -3,6 +3,9 @@ const express = require("express")
 const router = express.Router()
 const { getQpCollection } = require("../utils/utils")
 const Userlog = require("../schemas/userlog")
+const axios = require("axios")
+const https = require("https")
+const fs = require("fs")
 
 const Message = require("../schemas/message")
 
@@ -109,21 +112,6 @@ router.post("/getPdfUrl", async (req, res) => {
   }/${type == "ms" ? pdf.pdfname.replace("qp", "ms") : pdf.pdfname}`
 
   res.send(pdfLink)
-
-  function getPdfObject() {
-    return new Promise((resolve, reject) => {
-      getQpCollection()
-        .find({ pdfname: { $eq: pdfName } })
-        .project({ body: 0 })
-        .toArray((err, result) => {
-          if (err) {
-            resolve(null)
-          } else {
-            resolve(result)
-          }
-        })
-    })
-  }
 })
 
 router.post("/contact", async (req, res) => {
@@ -197,6 +185,55 @@ router.post("/registerLog", (req, res) => {
   res.send({})
 })
 
+router.get("/getPdf", async (req, res) => {
+  const pdfName = req.query.pdfName
+  const type = req.query.type
+
+  if (!pdfName) {
+    res.send({ error: true, info: "No pdf found" })
+    return
+  }
+
+  if (type && type != "ms") {
+    res.send({ error: true, info: "Pdf type invalid" })
+    return
+  }
+
+  const url = await getPdfUrl(pdfName, type)
+
+  if (!url) {
+    res.send({ error: true, info: "Could not find pdf." })
+    return
+  }
+
+  const agent = new https.Agent({
+    rejectUnauthorized: false,
+  })
+
+  const writer = fs.createWriteStream(__dirname + "/pdfs/m.pdf")
+
+  axios
+    .get(url, { httpsAgent: agent, responseType: "stream" })
+    .then((response) => {
+      return new Promise((resolve, reject) => {
+        response.data.pipe(writer)
+        let error = null
+        writer.on("error", (err) => {
+          error = err
+          writer.close()
+          res.send({ error: true, info: "Could not download pdf." })
+          reject(err)
+        })
+        writer.on("close", () => {
+          if (!error) {
+            res.sendFile(__dirname + "/pdfs/m.pdf")
+            resolve(true)
+          }
+        })
+      })
+    })
+})
+
 function validateEmail(input) {
   var validRegex =
     /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/
@@ -206,6 +243,36 @@ function validateEmail(input) {
   } else {
     return false
   }
+}
+
+function getPdfObject(pdfName) {
+  return new Promise((resolve, reject) => {
+    getQpCollection()
+      .find({ pdfname: { $eq: pdfName } })
+      .project({ body: 0 })
+      .toArray((err, result) => {
+        if (err) {
+          resolve(null)
+        } else {
+          resolve(result)
+        }
+      })
+  })
+}
+
+async function getPdfUrl(pdfName, type) {
+  const pdfObject = await getPdfObject(pdfName)
+  if (!pdfObject || pdfObject.length === 0) {
+    return
+  }
+
+  const pdf = pdfObject[0]
+  const grade = pdf.grade
+  const pdfLink = `https://papers.gceguide.com/${grade} Levels/${pdf.subject}/${
+    pdf.yearInt
+  }/${type == "ms" ? pdf.pdfname.replace("qp", "ms") : pdf.pdfname}`
+
+  return pdfLink
 }
 
 module.exports = router

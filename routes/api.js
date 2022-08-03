@@ -1,6 +1,5 @@
 const express = require("express")
 const router = express.Router()
-const axios = require("axios")
 const { getQpCollection } = require("../utils/utils")
 
 router.post("/getSubjectsLevel", async (req, res) => {
