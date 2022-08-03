@@ -89,16 +89,16 @@ router.post("/getPapers", async (req, res) => {
   }
 })
 
-router.post("/getPdfUrl", async (req, res) => {
-  const pdfName = req.body.pdfName
-  const type = req.body.type
+router.get("/getPdfUrl", async (req, res) => {
+  const pdfName = req.query.pdfName
+  const type = req.query.type
 
   if (!pdfName) {
     res.send({ error: true, info: "No pdf name provided" })
     return
   }
 
-  const pdfObject = await getPdfObject()
+  const pdfObject = await getPdfObject(pdfName)
 
   if (!pdfObject || pdfObject.length === 0) {
     res.send({ error: true, info: "No pdf found" })
@@ -185,61 +185,61 @@ router.post("/registerLog", (req, res) => {
   res.send({})
 })
 
-router.get("/getPdf", async (req, res) => {
-  const pdfName = req.query.pdfName
-  const type = req.query.type
+// router.get("/getPdf", async (req, res) => {
+//   const pdfName = req.query.pdfName
+//   const type = req.query.type
 
-  if (!pdfName) {
-    res.send({ error: true, info: "No pdf found" })
-    return
-  }
+//   if (!pdfName) {
+//     res.send({ error: true, info: "No pdf found" })
+//     return
+//   }
 
-  if (type && type != "ms") {
-    res.send({ error: true, info: "Pdf type invalid" })
-    return
-  }
+//   if (type && type != "ms") {
+//     res.send({ error: true, info: "Pdf type invalid" })
+//     return
+//   }
 
-  const url = await getPdfUrl(pdfName, type)
+//   const url = await getPdfUrl(pdfName, type)
 
-  if (!url) {
-    res.send({ error: true, info: "Could not find pdf." })
-    return
-  }
+//   if (!url) {
+//     res.send({ error: true, info: "Could not find pdf." })
+//     return
+//   }
 
-  const agent = new https.Agent({
-    rejectUnauthorized: false,
-  })
+//   const agent = new https.Agent({
+//     rejectUnauthorized: false,
+//   })
 
-  const pdfPath = "/pdfs/" + makeId(7) + ".pdf"
+//   const pdfPath = "/pdfs/" + makeId(7) + ".pdf"
 
-  const writer = fs.createWriteStream(__dirname + pdfPath)
+//   const writer = fs.createWriteStream(__dirname + pdfPath)
 
-  axios
-    .get(url, { httpsAgent: agent, responseType: "stream" })
-    .then((response) => {
-      return new Promise((resolve, reject) => {
-        response.data.pipe(writer)
-        let error = null
-        writer.on("error", (err) => {
-          error = err
-          writer.close()
-          res.send({ error: true, info: "Could not download pdf." })
-          reject(err)
-        })
-        writer.on("close", async () => {
-          if (!error) {
-            res.sendFile(__dirname + pdfPath)
-            resolve(true)
-            try {
-              setTimeout(() => {
-                fs.unlinkSync(__dirname + pdfPath)
-              }, 5000)
-            } catch (err) {}
-          }
-        })
-      })
-    })
-})
+//   axios
+//     .get(url, { httpsAgent: agent, responseType: "stream" })
+//     .then((response) => {
+//       return new Promise((resolve, reject) => {
+//         response.data.pipe(writer)
+//         let error = null
+//         writer.on("error", (err) => {
+//           error = err
+//           writer.close()
+//           res.send({ error: true, info: "Could not download pdf." })
+//           reject(err)
+//         })
+//         writer.on("close", async () => {
+//           if (!error) {
+//             res.sendFile(__dirname + pdfPath)
+//             resolve(true)
+//             try {
+//               setTimeout(() => {
+//                 fs.unlinkSync(__dirname + pdfPath)
+//               }, 5000)
+//             } catch (err) {}
+//           }
+//         })
+//       })
+//     })
+// })
 
 function validateEmail(input) {
   var validRegex =
