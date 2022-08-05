@@ -105,6 +105,49 @@ router.post("/", async (req, res) => {
   }
 })
 
+router.post("/autocomplete", async (req, res, next) => {
+  const q = req.body.q.toLowerCase()
+
+  if (!q) {
+    res.send({ error: true })
+    return
+  }
+
+  const results = await getResultsV3(q)
+
+  if (results.length == 0) {
+    res.send([])
+    return
+  }
+
+  let autocomplete = []
+  results.forEach((result) => {
+    let body = result.body.toLowerCase()
+
+    const firstIndex = body.indexOf(q)
+    const lastIndex = firstIndex + 100
+
+    let spaceIndex = lastIndex
+
+    if (firstIndex == -1) {
+      return
+    }
+
+    for (let i = lastIndex; i > firstIndex; i--) {
+      const letter = body[i]
+      if (letter == " ") {
+        spaceIndex = i
+        break
+      }
+    }
+
+    const text = body.substring(firstIndex, spaceIndex)
+    autocomplete.push(text)
+  })
+
+  res.send(autocomplete)
+})
+
 function getYearJson(year) {
   return { $match: { yearInt: { $eq: parseInt(year) } } }
 }
