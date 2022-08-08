@@ -5,7 +5,7 @@ const { getQpCollection } = require("../utils/utils")
 const Search = require("../schemas/searches")
 
 router.post("/", async (req, res) => {
-  const q = req.body.q
+  const q = req.body.q.toLowerCase().replace(/[^a-z0-9 ]/gi, "")
   const cookieId = req.body.cookieId
 
   const year = req.body.year
@@ -23,77 +23,7 @@ router.post("/", async (req, res) => {
   }
   const results = await getResultsV3(q, examLevel, subject, year)
 
-  if (results.length != 0) {
-    const finalResults = results.map((result) => {
-      let object = {}
-      object.subject = result.subject
-
-      let month
-      let prefix = result.year.slice(0, 1)
-
-      if (prefix == "m") {
-        month = "March"
-      } else if (prefix == "s") {
-        month = "June"
-      } else if (prefix == "w") {
-        month = "Nov"
-      }
-
-      let title =
-        month + " " + result.yearInt.toString() + " P" + result.variant
-      object.title = title
-
-      const link =
-        "https://papers.gceguide.com/A%20Levels/" +
-        result.subject +
-        "/" +
-        result.yearInt +
-        "/"
-
-      const qpLink = "/ViewPdf?name=" + result.pdfname
-      const msLink = "/ViewPdf?name=" + result.pdfname + "&type=ms"
-
-      const rawQpLink = link + result.pdfname
-      const rawMsLink = link + result.pdfname.replace("qp", "ms")
-
-      const textIndex = result.body
-        .replace(/[^a-z0-9 ]/gi, "")
-        .toLowerCase()
-        .indexOf(q.toLowerCase().replace(/[^a-z0-9 ]/gi, ""))
-      let resultText
-
-      if (textIndex !== -1) {
-        let textLastIndex
-        textLastIndex = textIndex + 220
-        if (textLastIndex > result.body.length) {
-          textLastIndex = result.body.length
-        }
-        resultText =
-          result.body
-            .replace(/[^a-z0-9 ]/gi, "")
-            .substring(textIndex, textLastIndex) + "..."
-      } else {
-        resultText = ""
-      }
-
-      object.resultText = resultText
-      object.qpLink = qpLink
-      object.msLink = msLink
-      object.rawQpLink = rawQpLink
-      object.rawMsLink = rawMsLink
-
-      return object
-    })
-
-    res.send({
-      error: false,
-      q: q,
-      results: finalResults,
-      subject: subject,
-      exam: examLevel,
-      year: year,
-    })
-  } else {
+  if (results.length == 0) {
     res.send({
       error: false,
       q: q,
@@ -102,11 +32,84 @@ router.post("/", async (req, res) => {
       exam: examLevel,
       year: year,
     })
+    return
   }
+
+  const finalResults = []
+
+  results.forEach((result) => {
+    let object = {}
+    object.subject = result.subject
+
+    let month
+    let prefix = result.year.slice(0, 1)
+
+    if (prefix == "m") {
+      month = "March"
+    } else if (prefix == "s") {
+      month = "June"
+    } else if (prefix == "w") {
+      month = "Nov"
+    }
+
+    let title = month + " " + result.yearInt.toString() + " P" + result.variant
+    object.title = title
+
+    const link =
+      "https://papers.gceguide.com/A%20Levels/" +
+      result.subject +
+      "/" +
+      result.yearInt +
+      "/"
+
+    const qpLink = "/ViewPdf?name=" + result.pdfname
+    const msLink = "/ViewPdf?name=" + result.pdfname + "&type=ms"
+
+    const rawQpLink = link + result.pdfname
+    const rawMsLink = link + result.pdfname.replace("qp", "ms")
+
+    const body = result.body.toLowerCase().replace(/[^a-z0-9 ]/gi, "")
+
+    const textIndex = body.indexOf(q)
+    let resultText
+
+    if (textIndex !== -1) {
+      let textLastIndex = textIndex + 220
+      if (textLastIndex > body.length - 1) {
+        textLastIndex = body.length - 1
+      }
+      resultText = body.substring(textIndex, textLastIndex) + "..."
+    } else {
+      resultText = ""
+    }
+
+    object.resultText = resultText
+    object.qpLink = qpLink
+    object.msLink = msLink
+    object.rawQpLink = rawQpLink
+    object.rawMsLink = rawMsLink
+
+    let pattern = new RegExp(q, "i")
+
+    if (body.match(pattern)) {
+      finalResults.unshift(object)
+    } else {
+      finalResults.push(object)
+    }
+  })
+
+  res.send({
+    error: false,
+    q: req.body.q,
+    results: finalResults,
+    subject: subject,
+    exam: examLevel,
+    year: year,
+  })
 })
 
 router.post("/autocomplete", async (req, res, next) => {
-  const q = req.body.q.toLowerCase()
+  const q = req.body.q.toLowerCase().replace(/[^a-z0-9 ]/gi, "")
 
   if (!q) {
     res.send({ error: true })
@@ -122,10 +125,14 @@ router.post("/autocomplete", async (req, res, next) => {
 
   let autocomplete = []
   results.forEach((result) => {
-    let body = result.body.toLowerCase()
+    let body = result.body.toLowerCase().replace(/[^a-z0-9 ]/gi, "")
 
     const firstIndex = body.indexOf(q)
-    const lastIndex = firstIndex + 100
+    let lastIndex = firstIndex + 100
+
+    if (lastIndex >= body.length) {
+      lastIndex = body.length - 1
+    }
 
     let spaceIndex = lastIndex
 
@@ -142,7 +149,14 @@ router.post("/autocomplete", async (req, res, next) => {
     }
 
     const text = body.substring(firstIndex, spaceIndex)
-    autocomplete.push(text)
+
+    let pattern = new RegExp(q, "i")
+
+    if (body.match(pattern)) {
+      autocomplete.unshift(text)
+    } else {
+      autocomplete.push(text)
+    }
   })
 
   res.send(autocomplete)
@@ -164,7 +178,7 @@ function getSearchJsonArr(searchText) {
   return [
     {
       $search: {
-        index: "autocomplete",
+        index: "auto2",
         compound: {
           must: [
             {
@@ -187,14 +201,20 @@ function getSearchJsonArr(searchText) {
                 score: { boost: { value: 5 } },
               },
             },
-          ],
-          should: [
             {
               autocomplete: {
                 query: searchText,
                 path: "body",
                 tokenOrder: "sequential",
                 score: { boost: { value: 10 } },
+              },
+            },
+            {
+              phrase: {
+                query: searchText,
+                path: "body",
+                score: { boost: { value: 20 } },
+                slop: 0,
               },
             },
           ],
