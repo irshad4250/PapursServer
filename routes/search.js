@@ -109,12 +109,14 @@ router.post("/", async (req, res) => {
 })
 
 router.post("/autocomplete", async (req, res, next) => {
-  const q = req.body.q.toLowerCase().replace(/[^a-z0-9 ]/gi, "")
+  let q = req.body.q
 
   if (!q) {
     res.send({ error: true })
     return
   }
+
+  q = q.toLowerCase().replace(/[^a-z0-9 ]/gi, "")
 
   const results = await getResultsV3(q)
 
