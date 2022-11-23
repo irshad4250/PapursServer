@@ -234,10 +234,13 @@ router.get("/getPdf", async (req, res) => {
               setTimeout(() => {
                 fs.unlinkSync(__dirname + pdfPath)
               }, 5000)
-            } catch (err) {}
+            } catch {}
           }
         })
       })
+    })
+    .catch(() => {
+      res.send({ error: true, info: "File not available." })
     })
 })
 
