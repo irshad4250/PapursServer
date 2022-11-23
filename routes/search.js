@@ -70,20 +70,7 @@ router.post("/", async (req, res) => {
 
     const body = result.body.toLowerCase().replace(/[^a-z0-9 ]/gi, "")
 
-    const textIndex = body.indexOf(q)
-    let resultText
-
-    if (textIndex !== -1) {
-      let textLastIndex = textIndex + 220
-      if (textLastIndex > body.length - 1) {
-        textLastIndex = body.length - 1
-      }
-      resultText = body.substring(textIndex, textLastIndex) + "..."
-    } else {
-      resultText = ""
-    }
-
-    object.resultText = resultText
+    object.resultText = getMatchingText(q, body)
     object.qpLink = qpLink
     object.msLink = msLink
     object.rawQpLink = rawQpLink
@@ -118,7 +105,7 @@ router.post("/autocomplete", async (req, res, next) => {
 
   q = q.toLowerCase().replace(/[^a-z0-9 ]/gi, "")
 
-  const results = await getResultsV3(q)
+  const results = await getResultsV3(q, null, null, null, 7)
 
   if (results.length == 0) {
     res.send([])
@@ -176,7 +163,7 @@ function getExamJson(examLevel) {
   return { $match: { grade: examLevel } }
 }
 
-function getSearchJsonArr(searchText) {
+function getSearchJsonArr(searchText, limit = 10) {
   return [
     {
       $search: {
@@ -224,7 +211,7 @@ function getSearchJsonArr(searchText) {
       },
     },
     {
-      $limit: 10,
+      $limit: limit,
     },
     {
       $project: {
@@ -240,8 +227,8 @@ function getSearchJsonArr(searchText) {
   ]
 }
 
-function getResultsV3(searchText, examLevel, subject, year) {
-  const search = getSearchJsonArr(searchText)
+function getResultsV3(searchText, examLevel, subject, year, limit = 10) {
+  const search = getSearchJsonArr(searchText, limit)
 
   if (examLevel) {
     search.push(getExamJson(examLevel))
@@ -259,6 +246,52 @@ function getResultsV3(searchText, examLevel, subject, year) {
     const results = await getQpCollection().aggregate(search).toArray()
     resolve(results)
   })
+}
+
+function getMatchingText(textSnip, text) {
+  const textIndex = text.indexOf(textSnip)
+  let resultText
+
+  if (textIndex !== -1) {
+    let textLastIndex = textIndex + 220
+    if (textLastIndex > text.length - 1) {
+      textLastIndex = text.length - 1
+    }
+    resultText = text.substring(textIndex, textLastIndex) + "..."
+
+    for (let i = resultText.length; i > 0; i--) {
+      const letter = resultText[i]
+      if (letter == " ") {
+        resultText = resultText.substring(0, i)
+        break
+      }
+    }
+    return resultText
+  }
+
+  return ""
+
+  function getAllIndexes(part, textToSearch) {
+    const arr = []
+    if (textToSearch.indexOf(part) == -1) {
+      return []
+    }
+
+    let stop = false
+    let indexToStart = 0
+
+    do {
+      console.log(indexToStart)
+      if (textToSearch.indexOf(part, indexToStart) != -1) {
+        arr.push(textToSearch.indexOf(part, indexToStart))
+        indexToStart = textToSearch.indexOf(part, indexToStart) + part.length
+      } else {
+        stop = true
+      }
+    } while (!stop)
+
+    return arr
+  }
 }
 
 module.exports = router
