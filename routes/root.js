@@ -6,6 +6,9 @@ const Userlog = require("../schemas/userlog")
 const axios = require("axios")
 const https = require("https")
 const fs = require("fs")
+const path = require("path")
+const fontkit = require("@pdf-lib/fontkit")
+const { PDFDocument, rgb } = require("pdf-lib")
 
 const Message = require("../schemas/message")
 
@@ -206,47 +209,103 @@ router.get("/getPdf", async (req, res) => {
     return
   }
 
-  const agent = new https.Agent({
-    rejectUnauthorized: false,
-  })
+  const pdfData = await getPdfData(url)
+  if (!pdfData) {
+    res.send({ error: true, info: "Could not download pdf." })
+    return
+  }
 
-  const pdfPath = "/pdfs/" + makeId(7) + ".pdf"
+  const pdfPath = __dirname + "/pdfs/" + makeId(7) + ".pdf"
+  const saved = await savePdfFileLocal(pdfData, pdfPath)
 
-  const writer = fs.createWriteStream(__dirname + pdfPath)
+  if (!saved) {
+    res.send({ error: true, info: "Could not save pdf." })
 
-  axios
-    .get(url, { httpsAgent: agent, responseType: "stream" })
-    .then((response) => {
-      return new Promise((resolve, reject) => {
-        response.data.pipe(writer)
-        let error = null
-        writer.on("error", (err) => {
-          error = err
-          writer.close()
-          res.send({ error: true, info: "Could not download pdf." })
-          reject(err)
-        })
-        writer.on("close", async () => {
-          if (!error) {
-            res.sendFile(__dirname + pdfPath)
-            resolve(true)
-            try {
-              setTimeout(() => {
-                fs.unlinkSync(__dirname + pdfPath)
-              }, 5000)
-            } catch {}
-          }
-        })
+    setTimeout(() => {
+      try {
+        fs.unlinkSync(pdfPath)
+      } catch {}
+    }, 5000)
+
+    return
+  }
+
+  await addWaterMarkToPdf(pdfPath)
+  res.sendFile(pdfPath)
+
+  setTimeout(() => {
+    try {
+      fs.unlinkSync(pdfPath)
+    } catch {}
+  }, 5000)
+
+  /**
+   * Returns true if saved, returns false otherwise
+   */
+  function savePdfFileLocal(data, pdfPath) {
+    return new Promise((resolve, reject) => {
+      const writer = fs.createWriteStream(pdfPath)
+      let error = null
+      data.pipe(writer)
+      writer.on("error", (err) => {
+        error = err
+        writer.close()
+        resolve(false)
+      })
+      writer.on("close", async () => {
+        if (!error) {
+          resolve(true)
+        } else {
+          resolve(false)
+        }
       })
     })
-    .catch((e) => {
-      res.send({ error: true, info: "File not available." })
-      try {
-        setTimeout(() => {
-          fs.unlinkSync(__dirname + pdfPath)
-        }, 5000)
-      } catch {}
+  }
+
+  function getPdfData(url) {
+    return new Promise((resolve, reject) => {
+      const agent = new https.Agent({
+        rejectUnauthorized: false,
+      })
+      axios
+        .get(url, { httpsAgent: agent, responseType: "stream" })
+        .then((response) => {
+          resolve(response.data)
+        })
+        .catch(() => {
+          resolve()
+        })
     })
+  }
+
+  function addWaterMarkToPdf(pdfPath) {
+    return new Promise(async (resolve, reject) => {
+      const fontBytes = fs.readFileSync(path.join(__dirname, "font.ttf"))
+      const pdfData = fs.readFileSync(pdfPath)
+      const pdf = await PDFDocument.load(pdfData)
+
+      pdf.registerFontkit(fontkit)
+      const watermarkFont = await pdf.embedFont(fontBytes)
+
+      pdf.setTitle(
+        (type ? pdfName.replace("qp", "ms") : pdfName) + " | papurs.com"
+      )
+      pdf.setAuthor("Papurs.com")
+      const pages = pdf.getPages()
+      pages.forEach((page) => {
+        page.moveTo(10, 10)
+        page.drawText("www.papurs.com", {
+          size: 12,
+          font: watermarkFont,
+          color: rgb(109 / 255, 40 / 255, 217 / 255),
+        })
+      })
+
+      const pdfBytes = await pdf.save()
+      fs.writeFileSync(pdfPath, pdfBytes)
+      resolve()
+    })
+  }
 })
 
 function validateEmail(input) {

@@ -1,1 +1,1 @@
-added for git
+added to prevent pdfs folder from being ignored
