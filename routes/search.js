@@ -1,7 +1,10 @@
 require("dotenv").config()
 const express = require("express")
 const router = express.Router()
-const { getQpCollection } = require("../utils/utils")
+const {
+  getQpCollection,
+  getInstantAnswerCollection,
+} = require("../utils/utils")
 const Search = require("../schemas/searches")
 
 router.post("/", async (req, res) => {
@@ -21,7 +24,18 @@ router.post("/", async (req, res) => {
     const search = new Search({ query: q, cookieId: cookieId })
     search.save()
   }
+  
   const results = await getResultsV3(q, examLevel, subject, year)
+  const instantAnsResults = await getInstantAnswer(q)
+
+  let pdfNames
+  try {
+    pdfNames = instantAnsResults.map((instantAns) => {
+      return instantAns.pdfname
+    })
+  } catch (error) {
+    pdfNames = []
+  }
 
   if (results.length == 0) {
     res.send({
@@ -75,6 +89,18 @@ router.post("/", async (req, res) => {
     object.msLink = msLink
     object.rawQpLink = rawQpLink
     object.rawMsLink = rawMsLink
+
+    if (pdfNames.includes(result.pdfname)) {
+      object.instantAns = instantAnsResults[pdfNames.indexOf(result.pdfname)]
+      object.instantAns.question = object.instantAns.question.replaceAll(
+        /[.]{2,}/g,
+        ""
+      )
+      object.instantAns.answer = object.instantAns.answer.replaceAll(
+        /[.]{2,}/g,
+        ""
+      )
+    }
 
     let pattern = new RegExp(q, "i")
 
@@ -246,6 +272,69 @@ function getResultsV3(searchText, examLevel, subject, year, limit = 10) {
     const results = await getQpCollection().aggregate(search).toArray()
     resolve(results)
   })
+}
+
+function getInstantAnswer(searchText) {
+  return new Promise(async (resolve, reject) => {
+    const search = instantAnsJSON(searchText)
+    const results = await getInstantAnswerCollection()
+      .aggregate(search)
+      .toArray()
+    resolve(results)
+  })
+
+  function instantAnsJSON(searchText) {
+    return [
+      {
+        $search: {
+          index: "default",
+          compound: {
+            must: [
+              {
+                text: {
+                  query: searchText,
+                  path: "question",
+                  fuzzy: {
+                    maxEdits: 1,
+                    prefixLength: 4,
+                    maxExpansions: 1,
+                  },
+                },
+              },
+            ],
+            should: [
+              {
+                autocomplete: {
+                  query: searchText,
+                  path: "question",
+                  score: { boost: { value: 5 } },
+                },
+              },
+              {
+                autocomplete: {
+                  query: searchText,
+                  path: "question",
+                  tokenOrder: "sequential",
+                  score: { boost: { value: 10 } },
+                },
+              },
+              {
+                phrase: {
+                  query: searchText,
+                  path: "question",
+                  score: { boost: { value: 20 } },
+                  slop: 0,
+                },
+              },
+            ],
+          },
+        },
+      },
+      {
+        $limit: 10,
+      },
+    ]
+  }
 }
 
 function getMatchingText(textSnip, text) {

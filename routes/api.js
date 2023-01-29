@@ -28,7 +28,6 @@ router.post("/getYears", async (req, res) => {
   }
 
   const years = await getYearArr(subject)
-
   res.send({ error: false, data: years })
 })
 

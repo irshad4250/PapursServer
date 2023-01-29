@@ -7,12 +7,17 @@ const client = new MongoClient(process.env.MONGODB_URI)
 const Userlog = require("../schemas/userlog")
 
 let qpCollection
+let instantAnswerCollection
 
 /**
  * Attribute for making requests to mongodb.
  */
 function getQpCollection() {
   return qpCollection
+}
+
+function getInstantAnswerCollection() {
+  return instantAnswerCollection
 }
 
 /**
@@ -28,6 +33,7 @@ function connectToMongo() {
 
       await client.connect()
       qpCollection = client.db("papurs").collection("qp")
+      instantAnswerCollection = client.db("papurs").collection("instantAnswer")
       resolve(true)
     } catch (e) {
       resolve(false)
@@ -75,6 +81,7 @@ function makeId(length) {
 module.exports = {
   connectToMongo,
   getQpCollection,
+  getInstantAnswerCollection,
   cookieMiddleware,
   makeId,
 }
