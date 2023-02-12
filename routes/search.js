@@ -49,7 +49,7 @@ router.post("/", async (req, res) => {
     return
   }
 
-  const finalResults = []
+  let finalResults = []
 
   results.forEach((result) => {
     let object = {}
@@ -85,6 +85,13 @@ router.post("/", async (req, res) => {
     const body = result.body.toLowerCase().replace(/[^a-z0-9 ]/gi, "")
 
     object.resultText = getMatchingText(q, body)
+    try {
+      object.resultText = getMatchingText(
+        returnPartialText(q, body).finalText,
+        body
+      )
+    } catch (e) {}
+
     object.qpLink = qpLink
     object.msLink = msLink
     object.rawQpLink = rawQpLink
@@ -110,6 +117,20 @@ router.post("/", async (req, res) => {
       finalResults.push(object)
     }
   })
+
+  const noBodyArr = []
+  const bodyArr = []
+
+  for (let i = 0; i < finalResults.length; i++) {
+    const body = finalResults[i].resultText
+    if (!body || body == " ") {
+      noBodyArr.push(finalResults[i])
+    } else {
+      bodyArr.push(finalResults[i])
+    }
+  }
+
+  finalResults = [...bodyArr, ...noBodyArr]
 
   res.send({
     error: false,
