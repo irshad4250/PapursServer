@@ -24,7 +24,7 @@ router.post("/", async (req, res) => {
     const search = new Search({ query: q, cookieId: cookieId })
     search.save()
   }
-  
+
   const results = await getResultsV3(q, examLevel, subject, year)
   const instantAnsResults = await getInstantAnswer(q)
 
@@ -131,6 +131,11 @@ router.post("/autocomplete", async (req, res, next) => {
 
   q = q.toLowerCase().replace(/[^a-z0-9 ]/gi, "")
 
+  if (q.trim().split(" ").length <= 2) {
+    res.send([])
+    return
+  }
+
   const results = await getResultsV3(q, null, null, null, 7)
 
   if (results.length == 0) {
@@ -141,41 +146,184 @@ router.post("/autocomplete", async (req, res, next) => {
   let autocomplete = []
   results.forEach((result) => {
     let body = result.body.toLowerCase().replace(/[^a-z0-9 ]/gi, "")
+    let text = ""
 
-    const firstIndex = body.indexOf(q)
-    let lastIndex = firstIndex + 100
+    try {
+      text = returnPartialText(q, body).finalText
+    } catch (error) {}
 
-    if (lastIndex >= body.length) {
-      lastIndex = body.length - 1
-    }
-
-    let spaceIndex = lastIndex
-
-    if (firstIndex == -1) {
-      return
-    }
-
-    for (let i = lastIndex; i > firstIndex; i--) {
-      const letter = body[i]
-      if (letter == " ") {
-        spaceIndex = i
-        break
-      }
-    }
-
-    const text = body.substring(firstIndex, spaceIndex)
-
-    let pattern = new RegExp(q, "i")
-
-    if (body.match(pattern)) {
-      autocomplete.unshift(text)
-    } else {
+    if (text) {
       autocomplete.push(text)
     }
   })
 
-  res.send(autocomplete)
+  const noOfMatchingArr = []
+
+  autocomplete.forEach((auto) => {
+    noOfMatchingArr.push({
+      autocompleteText: auto,
+      noOfMatches: getNumberOfMatchingLetters(auto, q),
+    })
+  })
+
+  let greatestMatching = 1000
+
+  const finalAutocomplete = []
+
+  noOfMatchingArr.forEach((matchingArr) => {
+    if (!matchingArr.autocompleteText || matchingArr.autocompleteText == " ") {
+      return
+    }
+    if (matchingArr.noOfMatches <= greatestMatching) {
+      finalAutocomplete.push(matchingArr.autocompleteText)
+    } else {
+      finalAutocomplete.unshift(matchingArr.autocompleteText)
+      greatestMatching = noOfMatchingArr.noOfMatches
+    }
+  })
+
+  res.send(finalAutocomplete)
 })
+
+function returnPartialText(text, paragraph) {
+  const MAX_NULLS = 4
+
+  // converting string into word array
+  const paragraphArr = paragraph.toLowerCase().split(" ")
+  const textArr = text.toLowerCase().split(" ")
+
+  //getting all indexes of each word in paragraph.
+  //example of results [40,250,466]
+  //is a 2D Array
+  const wordsIndexesArr = textArr.map((wordText) => {
+    return returnAllIndexesOf(wordText, paragraphArr)
+  })
+
+  //For each first word in arr is where we start
+  const firstArr = wordsIndexesArr[0]
+
+  //Will contains all indexes of words in a sequence a 2d array
+  const sequencedArray = []
+
+  for (let i = 0; i < firstArr.length; i++) {
+    let currentIndex = firstArr[i]
+
+    const finalArr = []
+    finalArr.push(currentIndex)
+
+    for (let k = 1; k < wordsIndexesArr.length; k++) {
+      const nextArr = wordsIndexesArr[k]
+
+      if (nextArr.includes(currentIndex + 1)) {
+        finalArr.push(currentIndex + 1)
+      } else {
+        finalArr.push(null)
+      }
+      currentIndex += 1
+    }
+
+    sequencedArray.push(finalArr)
+  }
+
+  //the indexes that we will get autocomplete from
+  let finalSequence = []
+
+  //Gets the sequence that has the least number of nulls
+  for (let i = 0; i < sequencedArray.length; i++) {
+    const array = sequencedArray[i]
+
+    const noOfNulls = getNoOfNulls(array)
+
+    if (finalSequence.length == 0) {
+      finalSequence = array
+    }
+
+    if (noOfNulls < getNoOfNulls(finalSequence)) {
+      finalSequence = array
+    }
+  }
+
+  // returns nothing if null us greater than 4
+  if (getNoOfNulls(finalSequence) > MAX_NULLS) {
+    return
+  }
+
+  //adding text to sequence
+  let lastIndex = -1
+  for (let i = 0; i < finalSequence.length; i++) {
+    const index = finalSequence[i]
+
+    if (lastIndex != -1 && index == null) {
+      lastIndex = lastIndex + 1
+      finalSequence[i] = lastIndex
+    }
+
+    lastIndex = index
+  }
+
+  let lastWordIndex = finalSequence[finalSequence.length - 1] + 12
+  if (lastWordIndex >= paragraphArr.length) {
+    lastWordIndex = paragraphArr.length - 1
+  }
+
+  let finalText = ""
+  let sequenceText = " "
+  let addedText = " "
+  for (
+    let i = finalSequence[finalSequence.length - 1] + 1;
+    i < lastWordIndex + 1;
+    i++
+  ) {
+    addedText += paragraphArr[i] + " "
+  }
+  finalSequence.forEach((seqIndex) => {
+    sequenceText += paragraphArr[seqIndex] + " "
+  })
+
+  finalText = sequenceText.trimEnd() + addedText
+
+  return { sequenceText: sequenceText.trim(), addedText, finalText }
+
+  function returnAllIndexesOf(wordText, wordsArr) {
+    let indexToStart = 0
+    const indexes = []
+
+    do {
+      const index = wordsArr.indexOf(wordText, indexToStart)
+      if (index != -1) {
+        indexes.push(index)
+      }
+      indexToStart = index + 1
+    } while (indexToStart != 0)
+    return indexes
+  }
+
+  function getNoOfNulls(Array) {
+    let no = 0
+
+    Array.forEach((index) => {
+      if (index == null) {
+        no++
+      }
+    })
+    return no
+  }
+}
+
+function getNumberOfMatchingLetters(partialText, qText) {
+  let qTextArr = qText.split(" ")
+  let partialTextArr = partialText.split(" ")
+
+  let noOfMatching = 0
+
+  qTextArr.forEach((q) => {
+    if (partialTextArr.includes(q)) {
+      noOfMatching++
+    }
+  })
+
+  return noOfMatching
+}
 
 function getYearJson(year) {
   return { $match: { yearInt: { $eq: parseInt(year) } } }
