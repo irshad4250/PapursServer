@@ -337,8 +337,8 @@ function getNumberOfMatchingLetters(partialText, qText) {
 
   let noOfMatching = 0
 
-  qTextArr.forEach((q) => {
-    if (partialTextArr.includes(q)) {
+  partialTextArr.forEach((partialText) => {
+    if (qTextArr.includes(partialText)) {
       noOfMatching++
     }
   })
@@ -528,28 +528,6 @@ function getMatchingText(textSnip, text) {
   }
 
   return ""
-
-  function getAllIndexes(part, textToSearch) {
-    const arr = []
-    if (textToSearch.indexOf(part) == -1) {
-      return []
-    }
-
-    let stop = false
-    let indexToStart = 0
-
-    do {
-      console.log(indexToStart)
-      if (textToSearch.indexOf(part, indexToStart) != -1) {
-        arr.push(textToSearch.indexOf(part, indexToStart))
-        indexToStart = textToSearch.indexOf(part, indexToStart) + part.length
-      } else {
-        stop = true
-      }
-    } while (!stop)
-
-    return arr
-  }
 }
 
 module.exports = router
