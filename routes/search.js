@@ -206,6 +206,35 @@ router.post("/autocomplete", async (req, res, next) => {
   res.send(finalAutocomplete)
 })
 
+router.post("/getAllInstantAnswers", async (req, res, next) => {
+  const pdfName = req.body.pdfName
+
+  if (!pdfName) {
+    res.send({ error: true, info: "No pdf name provided" })
+    return
+  }
+
+  const instantAnswers = await getAllInstantAnswers(pdfName)
+
+  if (instantAnswers.length == 0) {
+    res.send({ error: true, info: "No instant answer available" })
+    return
+  }
+
+  res.send(instantAnswers)
+
+  function getAllInstantAnswers(pdfName) {
+    return new Promise(async (resolve, reject) => {
+      const results = await getInstantAnswerCollection()
+        .find({ pdfname: pdfName })
+        .sort({ label: 1 })
+        .toArray()
+
+      resolve(results)
+    })
+  }
+})
+
 function returnPartialText(text, paragraph) {
   const MAX_NULLS = 4
 
