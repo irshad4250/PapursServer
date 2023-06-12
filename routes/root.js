@@ -268,11 +268,14 @@ router.get("/getPdf", async (req, res) => {
         rejectUnauthorized: false,
       })
       axios
-        .get(url, { httpsAgent: agent, responseType: "stream" })
+        .get(url, {
+          httpsAgent: agent,
+          responseType: "stream",
+        })
         .then((response) => {
           resolve(response.data)
         })
-        .catch(() => {
+        .catch((e) => {
           resolve()
         })
     })
@@ -307,6 +310,104 @@ router.get("/getPdf", async (req, res) => {
     })
   }
 })
+
+router.get("/getTemplate", async (req, res) => {
+  res.sendFile(__dirname + "/template.pdf")
+})
+
+router.post("/getUrlForPastPapers", async (req, res) => {
+  let { subject, startYear, endYear, variants } = req.body
+
+  if (variants && variants.length != 0) {
+    variants = variants.map((variant) => variant.toString())
+  } else {
+    variants = []
+  }
+
+  if (!subject || !startYear || !endYear) {
+    res.send({ error: true, info: "Missing values" })
+    return
+  }
+
+  try {
+    startYear = parseInt(startYear)
+    endYear = parseInt(endYear)
+  } catch {
+    res.send({
+      error: true,
+      info: "Some values are wrong please check and try again",
+    })
+    return
+  }
+
+  const papers = await getPapersForGenerator(
+    subject,
+    startYear,
+    endYear,
+    variants
+  )
+
+  if (!papers || papers.length == 0) {
+    res.send({
+      error: true,
+      info: "There is no past papers available for these input.",
+    })
+    return
+  }
+  const filteredPapers = returnUrlArray(papers)
+
+  res.send(filteredPapers)
+
+  function returnUrlArray(papers) {
+    return papers.map((paper) => {
+      const final = {}
+      final.downloadUrl = `https://server.papurs.com/getPdf?pdfName=${paper.pdfname}`
+      // final.downloadUrl = `http://192.168.100.140:5000/getPdf?pdfName=${paper.pdfname}`
+      final.subject = paper.subject
+      final.yearInt = paper.yearInt
+      final.variant = paper.variant
+      final.month = getMonth(paper.year[0])
+      final.title = final.month + " " + final.yearInt + " P" + final.variant
+
+      return final
+    })
+  }
+
+  function getMonth(suffix) {
+    if (suffix == "m") {
+      return "March"
+    } else if (suffix == "w") {
+      return "November"
+    } else {
+      return "June"
+    }
+  }
+})
+
+function getPapersForGenerator(subject, startYear, endYear, variants) {
+  const queryObject = {
+    subject: { $eq: subject },
+    yearInt: { $gte: parseInt(startYear), $lte: parseInt(endYear) },
+  }
+
+  if (variants.length != 0) {
+    queryObject.variant = { $in: variants }
+  }
+
+  return new Promise((resolve, reject) => {
+    getQpCollection()
+      .find(queryObject)
+      .project({ body: 0 })
+      .sort({ yearInt: 1 })
+      .toArray((err, result) => {
+        if (err) {
+          resolve(null)
+        } else {
+          resolve(result)
+        }
+      })
+  })
+}
 
 function validateEmail(input) {
   var validRegex =
