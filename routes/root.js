@@ -443,9 +443,17 @@ async function getPdfUrl(pdfName, type) {
 
   const pdf = pdfObject[0]
   const grade = pdf.grade
-  const pdfLink = `https://papers.gceguide.com/${grade} Levels/${pdf.subject}/${
+
+  let pdfLink
+
+  pdfLink = `https://papers.gceguide.com/${grade} Levels/${pdf.subject}/${
     pdf.yearInt
   }/${type == "ms" ? pdf.pdfname.replace("qp", "ms") : pdf.pdfname}`
+
+  let tempType = type != undefined ? type : "qp"
+  if (pdf[tempType + "Link"]) {
+    pdfLink = pdf[tempType + "Link"]
+  }
 
   return pdfLink
 }
