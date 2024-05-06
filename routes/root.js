@@ -11,6 +11,7 @@ const fontkit = require("@pdf-lib/fontkit")
 const { PDFDocument, rgb } = require("pdf-lib")
 
 const Message = require("../schemas/message")
+const GiveawayEntry = require("../schemas/giveawayentry")
 
 router.post("/getPapers", async (req, res) => {
   const { subject, year } = req.body
@@ -382,6 +383,140 @@ router.post("/getUrlForPastPapers", async (req, res) => {
       return "June"
     }
   }
+})
+
+//when user press from whatsapp
+router.get("/enterGiveaway", (req, res) => {
+  const id = req.query.id
+  if (!id) {
+    res.send({ error: true, info: "No id provided" })
+    return
+  }
+
+  if (req.device.type == "bot") {
+    //return an html page with a description  of the giveaway
+    const html = `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="UTF-8">
+      <title>Giveaway Description</title>
+      <meta property="og:title" content="Papurs.com first giveaway" />
+      <meta name="description" content="Win an M3 Macbook Pro and other amazing prizes in our exclusive giveaway! Access past papers and a powerful search engine to ace your exams effortlessly. Join now!">
+    </head>
+    <body>
+      <h1>Giveaway Description</h1>
+      <p>Enter the giveaway for a chance to win amazing prizes!</p>
+    </body>
+    </html>
+    `
+    res.send(html)
+    return
+  }
+
+  let link =
+    process.env.NODE_ENV == "production"
+      ? "https://www.papurs.com"
+      : "http://192.168.100.140:3000"
+  link += "/intro"
+
+  if (req.cookies[`entered${id}`]) {
+    res.redirect(link)
+    return
+  }
+
+  //Starts here
+  GiveawayEntry.findOneAndUpdate(
+    { _id: id },
+    { $inc: { clicks: 1 } },
+    function (err, result) {}
+  )
+
+  res.cookie(`entered${id}`, "true", {
+    maxAge: 1000 * 60 * 60 * 24 * 365,
+    httpOnly: true,
+  })
+
+  res.redirect(link)
+})
+
+//When user press get link
+router.get("/initiateGiveaway", async (req, res) => {
+  //create giveaway entry
+  const email = req.query.email
+  const emailExits = await checkIfEmailExists(email)
+
+  if (!validateEmail(email)) {
+    res.send({ error: true, info: "Email in wrong format!" })
+    return
+  }
+
+  if (emailExits) {
+    res.send({
+      error: true,
+      info: "Email has already been registered for giveaway, use another one!",
+    })
+    return
+  }
+
+  if (!email) {
+    res.send({ error: true, info: "Email is required" })
+    return
+  }
+
+  const entry = new GiveawayEntry({
+    email: email,
+  })
+
+  let referralLink =
+    process.env.NODE_ENV == "production"
+      ? "https://server.papurs.com"
+      : "http://192.168.100.140:5000"
+
+  entry.save(function (err, result) {
+    if (!err) {
+      referralLink += "/enterGiveaway?id=" + result._id
+      res.send(referralLink)
+    } else {
+      res.send({ error: true, info: "Could not create referral link" })
+    }
+  })
+
+  async function checkIfEmailExists(email) {
+    return new Promise((resolve, reject) => {
+      GiveawayEntry.findOne({ email: email }, (err, result) => {
+        if (err) {
+          resolve(false)
+        } else {
+          if (result) {
+            resolve(true)
+          } else {
+            resolve(false)
+          }
+        }
+      })
+    })
+  }
+})
+
+router.get("/getGiveawayStatus", async (req, res) => {
+  let email = req.query.email
+  if (!email) {
+    res.send({ error: true, info: "Email is required" })
+    return
+  }
+  GiveawayEntry.findOne({ email: email }, (err, result) => {
+    if (err) {
+      res.send({ error: true, info: "Server error" })
+      return
+    }
+
+    if (result) {
+      res.send(result)
+    } else {
+      res.send({ error: true, info: "No data found" })
+    }
+  })
 })
 
 function getPapersForGenerator(subject, startYear, endYear, variants) {
